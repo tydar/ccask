@@ -2,8 +2,10 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "crc.h"
 #include "ccask_header.h"
+#include "ccask_kv.h"
 
 int main(void) {
     crc_init();
@@ -28,6 +30,12 @@ int main(void) {
     deser = ccask_header_deserialize(deser, ser);
 
     ccask_header_print(deser);
+
+    uint8_t key[2] = { 0xA2, 2 };
+    uint8_t val[5] = { 1, 2, 0xFF, 4, 5 };
+    ccask_kv* kv = ccask_kv_new(2, 5, key, val);
+
+    ccask_kv_print(kv);
 
     return EXIT_SUCCESS;
 }
