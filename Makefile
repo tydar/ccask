@@ -1,3 +1,5 @@
+# Adapted very minorly from https://makefiletutorial.com/
+
 TARGET_EXEC := ccask
 
 BUILD_DIR := ./build
