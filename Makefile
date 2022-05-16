@@ -27,4 +27,8 @@ $(BUILD_DIR)/%.c.o: %.c
 clean:
 	rm -r $(BUILD_DIR)
 
+.PHONY: style
+style:
+	astyle --style=java --recursive $(SRC_DIRS)/*.c,*.h
+
 -include $(DEPS)
