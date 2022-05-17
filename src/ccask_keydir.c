@@ -5,6 +5,11 @@
  * Collision resolution: separate chaining
  */
 
+#include <stdlib.h>
+#include <stddef.h>
+#include <inttypes.h>
+#include <string.h>
+
 #include "ccask_keydir.h"
 
 /*-----------struct defs---------------------*/
@@ -20,7 +25,7 @@ struct ccask_kdrow {
 
 struct ccask_keydir {
     size_t size;
-    ccask_kd_row* entries;
+    ccask_kdrow* entries;
 };
 
 
@@ -36,7 +41,7 @@ ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr,
             .file_id = file_id,
             .value_size = value_size,
             .value_pos = value_pos,
-            .timestamp = .timestamp,
+            .timestamp = timestamp,
             .next = 0,
         };
     } else {
@@ -60,7 +65,9 @@ void ccask_kdrow_destroy(ccask_kdrow* kdr) {
     if (kdr) {
         kdr->next = 0;
         free(kdr->key);
-        *kdr = { 0 };
+        *kdr = (ccask_kdrow) {
+            0
+        };
     }
 }
 
@@ -76,7 +83,7 @@ ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size) {
         *kd = (ccask_keydir) {
             .size = size,
             .entries = entries,
-        }
+        };
     } else {
         *kd = (ccask_keydir) {
             0
