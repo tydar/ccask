@@ -21,8 +21,8 @@ void ccask_keydir_destroy(ccask_keydir* kd);
 void ccask_keydir_delete(ccask_keydir* kd);
 
 // get/set
-ccask_keydir* ccask_keydir_insert(ccask_kdrow* elem);
-ccask_kdrow* ccask_keydir_get(uint32_t key_size, uint8_t* key);
+ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow* elem);
+ccask_kdrow* ccask_keydir_get(ccask_keydir* kd, uint32_t key_size, uint8_t* key);
 
 
 #endif
