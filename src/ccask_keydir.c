@@ -28,6 +28,33 @@ struct ccask_keydir {
     ccask_kdrow* entries;
 };
 
+/*-----------------utility functions-------------------*/
+
+/**@brief FNV-1a hash of the key *key* of length *key_size*.
+ *
+ * [FNV-1a hash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)
+ *
+ * @param key array of key_size bytes
+ * @param key_size size of the key in bytes
+ */
+size_t hash(uint32_t key_size, uint8_t* key, size_t table_size) {
+    size_t hash = 14695981039346656037ULL; // FNV offset basis constant
+
+    for (uint32_t i = 0; i < key_size; i++) {
+        hash ^= key[i];
+        hash *= 1099511628211; // FNV 64bit prime constant
+    }
+
+    return hash % table_size;
+}
+
+ccask_kdrow* init_entries(size_t size, ccask_kdrow* entries) {
+    for (size_t i = 0; i < size; i++) {
+        entries[0] = (ccask_kdrow) {
+            0
+        };
+    }
+}
 
 /*---------------kdrow functions-------------*/
 ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr,
@@ -113,17 +140,6 @@ void ccask_keydir_delete(ccask_keydir* kd) {
     free(kd);
 }
 
-ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow elem) {
-    size_t index = hash(elem->key_size, elem->key, kd->size);
-    if (!kd->entries[index]->key) {
-        *kd->entries[index] = elem;
-    } else {
-        keydir_chain_insert(kd->entries[index], elem);
-    }
-
-    return kd;
-}
-
 /**@brief walk the chain of elements until the next pointer is null, then insert our new element there*/
 ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow elem) {
     ccask_kdrow* next = entry->next;
@@ -137,34 +153,17 @@ ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow elem) {
     return entry;
 }
 
+ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow elem) {
+    size_t index = hash(elem.key_size, elem.key, kd->size);
+    if (!kd->entries[index].key) {
+        kd->entries[index] = elem;
+    } else {
+        keydir_chain_insert(&(kd->entries[index]), elem);
+    }
+
+    return kd;
+}
+
 ccask_kdrow* ccask_keydir_get(ccask_keydir* kd, uint32_t key_size, uint8_t* key) {
     return 0;
-}
-
-/*-----------------utility functions-------------------*/
-
-/**@brief FNV-1a hash of the key *key* of length *key_size*.
- *
- * [FNV-1a hash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)
- *
- * @param key array of key_size bytes
- * @param key_size size of the key in bytes
- */
-size_t hash(uint32_t key_size, uint8_t* key, size_t table_size) {
-    size_t hash = 14695981039346656037; // FNV offset basis constant
-
-    for (uint32_t i = 0; i < key_size; i++) {
-        hash ^= key[i];
-        hash *= 1099511628211; // FNV 64bit prime constant
-    }
-
-    return hash % table_size;
-}
-
-ccask_kdrow* init_entries(size_t size, ccask_kdrow* entries) {
-    for (size_t i = 0; i < size; i++) {
-        entries[0] = (ccask_kdrow) {
-            0
-        };
-    }
 }
