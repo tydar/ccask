@@ -31,4 +31,8 @@ clean:
 style:
 	astyle --style=java --recursive $(SRC_DIRS)/*.c,*.h
 
+debug: CFLAGS += -g
+debug: $(BUILD_DIR)/$(TARGET_EXEC)
+
+
 -include $(DEPS)
