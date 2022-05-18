@@ -55,3 +55,5 @@ Mkfile.old
 dkms.conf
 
 *.orig
+.cache
+compile_commands.json
