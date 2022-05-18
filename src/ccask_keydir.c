@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <inttypes.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "ccask_keydir.h"
 
@@ -50,10 +51,12 @@ size_t hash(uint32_t key_size, uint8_t* key, size_t table_size) {
 
 ccask_kdrow* init_entries(size_t size, ccask_kdrow* entries) {
     for (size_t i = 0; i < size; i++) {
-        entries[0] = (ccask_kdrow) {
+        entries[i] = (ccask_kdrow) {
             0
         };
     }
+
+    return entries;
 }
 
 /*---------------kdrow functions-------------*/
@@ -103,10 +106,19 @@ void ccask_kdrow_delete(ccask_kdrow* kdr) {
     free(kdr);
 }
 
+void ccask_kdrow_print(ccask_kdrow* kdr) {
+    printf("Key size: %u ", kdr->key_size);
+    printf("Key: [ ");
+    for (uint32_t i = 0; i < kdr->key_size; i++) {
+        printf("%hhx ", kdr->key[i]);
+    }
+    printf("] Timestamp: %u\n", kdr->timestamp);
+}
+
 /*------------------keydir functions------------------*/
 ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size) {
     ccask_kdrow* entries = malloc(size*sizeof(ccask_kdrow));
-    entries = init_entries(size, entries);
+    init_entries(size, entries);
     if (kd) {
         *kd = (ccask_keydir) {
             .size = size,
@@ -141,22 +153,31 @@ void ccask_keydir_delete(ccask_keydir* kd) {
 }
 
 /**@brief walk the chain of elements until the next pointer is null, then insert our new element there*/
-ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow elem) {
+ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
+    if(!entry->next) {
+        entry->next = malloc(sizeof(ccask_kdrow));
+        *entry->next = *elem;
+        return entry;
+    }
+
     ccask_kdrow* next = entry->next;
-    while(next->next) {
+    ccask_kdrow* last = next;
+
+    while(next) {
+        last = next;
         next = next->next;
     }
 
-    next->next = malloc(sizeof(ccask_kdrow));
-    *next->next = elem;
+    last->next = malloc(sizeof(ccask_kdrow));
+    *last->next = *elem;
 
-    return entry;
+    return last;
 }
 
-ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow elem) {
-    size_t index = hash(elem.key_size, elem.key, kd->size);
-    if (!kd->entries[index].key) {
-        kd->entries[index] = elem;
+ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow* elem) {
+    size_t index = hash(elem->key_size, elem->key, kd->size);
+    if (kd->entries[index].key_size == 0) {
+        kd->entries[index] = *elem;
     } else {
         keydir_chain_insert(&(kd->entries[index]), elem);
     }
@@ -164,6 +185,37 @@ ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow elem) {
     return kd;
 }
 
+// To retrieve a keydir entry, we need to
+// 1) get correct hash bucket
+// 2) check the key of the stored value
+// 3) if there is a chain, walk the chain to be sure we don't have a newer one
+// 4) return the newest item from that bucket with a matching key
+//
+// If a value has been stored under that key a bunch of times, it could expensive
+// but eventually should implement chain compression as part of the get process to
+// remove all but the oldest keydir entry.
+//
+// Alternatively could support rollbacks somehow by maintaining the chain...
+
+ccask_kdrow* keydir_chain_get(ccask_kdrow* entry, uint32_t key_size, uint8_t* key) {
+    ccask_kdrow* match = { 0 };
+    ccask_kdrow* next = entry;
+
+    do {
+        if(next->key_size == key_size && memcmp(key, next->key, key_size) == 0) {
+            match = next;
+        }
+        next = next->next;
+    } while(next);
+
+    return match;
+}
+
 ccask_kdrow* ccask_keydir_get(ccask_keydir* kd, uint32_t key_size, uint8_t* key) {
-    return 0;
+    size_t index = hash(key_size, key, kd->size);
+    ccask_kdrow* match = { 0 };
+    if(kd->entries[index].key_size != 0) {
+        match = keydir_chain_get(&(kd->entries[index]), key_size, key);
+    }
+    return match;
 }

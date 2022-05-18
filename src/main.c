@@ -6,6 +6,7 @@
 #include "crc.h"
 #include "ccask_header.h"
 #include "ccask_kv.h"
+#include "ccask_keydir.h"
 
 int main(void) {
     crc_init();
@@ -36,6 +37,31 @@ int main(void) {
     ccask_kv* kv = ccask_kv_new(2, 5, key, val);
 
     ccask_kv_print(kv);
+
+    ccask_keydir* kd = ccask_keydir_new(256);
+    uint8_t key2[3] = {  10, 11, 12 };
+
+    ccask_kdrow* elem = ccask_kdrow_new(3, key2, 0, 5, 0, 0);
+    kd = ccask_keydir_insert(kd, elem);
+
+    ccask_kdrow* gotten = ccask_keydir_get(kd, 3, key2);
+    ccask_kdrow_print(gotten);
+
+    ccask_kdrow* elem2 = ccask_kdrow_new(3, key2, 0, 5, 0, 1);
+    kd = ccask_keydir_insert(kd, elem2);
+
+    gotten = ccask_keydir_get(kd, 3, key2);
+    ccask_kdrow_print(gotten);
+
+    uint8_t key3[3] = { 20, 21, 22 };
+    ccask_kdrow* elem3 = ccask_kdrow_new(3, key3, 0, 5, 0, 0);
+    kd = ccask_keydir_insert(kd, elem3);
+
+    gotten = ccask_keydir_get(kd, 3, key3);
+    ccask_kdrow_print(gotten);
+
+    gotten = ccask_keydir_get(kd, 3, key2);
+    ccask_kdrow_print(gotten);
 
     return EXIT_SUCCESS;
 }
