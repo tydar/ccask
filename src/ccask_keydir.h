@@ -3,14 +3,15 @@
 
 #include <inttypes.h>
 #include <stddef.h>
+#include <time.h>
 
 // ccask_kdrow
 typedef struct ccask_kdrow ccask_kdrow;
 // ccask_kdrow init / delete
-ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr,
-                              uint32_t key_size, uint8_t* key, uint32_t file_id, uint32_t value_size, uint32_t value_pos, uint32_t timestamp);
-ccask_kdrow* ccask_kdrow_new(uint32_t key_size,
-                             uint8_t* key, uint32_t file_id, uint32_t value_size, uint32_t value_pos, uint32_t timestamp);
+ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr, uint32_t key_size, uint8_t* key,
+                              uint32_t file_id, uint32_t value_size, uint32_t value_pos, time_t timestamp);
+ccask_kdrow* ccask_kdrow_new(uint32_t key_size, uint8_t* key, uint32_t file_id,
+                             uint32_t value_size, uint32_t value_pos, time_t timestamp);
 void ccask_kdrow_destroy(ccask_kdrow* kdr);
 void ccask_kdrow_delete(ccask_kdrow* kdr);
 

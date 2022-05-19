@@ -1,8 +1,10 @@
 
 /* The keydir is a hash table from keys -> file_id, value_size, value_pos, timestamp
  *
- * Hash function: division hash
+ * Hash function: FNV-1a
  * Collision resolution: separate chaining
+ *
+ * TODO: make the hash function swappable via fn pointer in the ccask_keydir struct (for easy testing)
  */
 
 #include <stdlib.h>
@@ -10,6 +12,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "ccask_keydir.h"
 
@@ -20,7 +23,7 @@ struct ccask_kdrow {
     uint32_t file_id;
     uint32_t value_size;
     size_t value_pos;
-    uint32_t timestamp;
+    time_t timestamp;
     ccask_kdrow* next;
 };
 
@@ -60,8 +63,8 @@ ccask_kdrow* init_entries(size_t size, ccask_kdrow* entries) {
 }
 
 /*---------------kdrow functions-------------*/
-ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr,
-                              uint32_t key_size, uint8_t* key, uint32_t file_id, uint32_t value_size, uint32_t value_pos, uint32_t timestamp) {
+ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr, uint32_t key_size, uint8_t* key,
+                              uint32_t file_id, uint32_t value_size, uint32_t value_pos, time_t timestamp) {
     uint8_t* nkey = malloc(key_size);
     memcpy(nkey, key, key_size);
     if (kdr && nkey) {
@@ -83,8 +86,8 @@ ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr,
     return kdr;
 }
 
-ccask_kdrow* ccask_kdrow_new(uint32_t key_size,
-                             uint8_t* key, uint32_t file_id, uint32_t value_size, uint32_t value_pos, uint32_t timestamp) {
+ccask_kdrow* ccask_kdrow_new(uint32_t key_size, uint8_t* key, uint32_t file_id,
+                             uint32_t value_size, uint32_t value_pos, time_t timestamp) {
     ccask_kdrow* kdr = malloc(sizeof(ccask_kdrow));
 
     return ccask_kdrow_init(kdr, key_size, key, file_id, value_size, value_pos, timestamp);
@@ -112,7 +115,7 @@ void ccask_kdrow_print(ccask_kdrow* kdr) {
     for (uint32_t i = 0; i < kdr->key_size; i++) {
         printf("%hhx ", kdr->key[i]);
     }
-    printf("] Timestamp: %u\n", kdr->timestamp);
+    printf("] Timestamp: %ld\n", kdr->timestamp);
 }
 
 /*------------------keydir functions------------------*/
