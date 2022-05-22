@@ -3,17 +3,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include <time.h>
 
 struct ccask_header {
+    time_t timestamp;
     uint32_t crc;
-    uint32_t timestamp;
     uint32_t key_size;
     uint32_t value_size;
 };
 
 size_t HEADER_SIZE = sizeof(ccask_header);
+size_t HEADER_BYTES = sizeof(time_t) + 3*sizeof(uint32_t);
 
-ccask_header* ccask_header_init(ccask_header* c, uint32_t crc, uint32_t timestamp, uint32_t key_size, uint32_t value_size) {
+ccask_header* ccask_header_init(ccask_header* c, uint32_t crc, time_t timestamp, uint32_t key_size, uint32_t value_size) {
     if (c) {
         *c = (ccask_header) {
             .crc = crc,
@@ -26,7 +28,7 @@ ccask_header* ccask_header_init(ccask_header* c, uint32_t crc, uint32_t timestam
     return c;
 }
 
-ccask_header* ccask_header_new(uint32_t crc, uint32_t timestamp, uint32_t key_size, uint32_t value_size) {
+ccask_header* ccask_header_new(uint32_t crc, time_t timestamp, uint32_t key_size, uint32_t value_size) {
     return ccask_header_init(malloc(sizeof(ccask_header)), crc, timestamp, key_size, value_size);
 }
 
@@ -83,7 +85,7 @@ ccask_header* ccask_header_deserialize(ccask_header* dest, uint8_t* data) {
 void ccask_header_print(const ccask_header* src) {
     if (!src) return;
 
-    printf("{\n\tcrc: %x\n\ttimestamp: %x\n\tkey_size: %x\n\tvalue_size: %x\n}\n",
+    printf("{\n\tcrc: %x\n\ttimestamp: %zu\n\tkey_size: %x\n\tvalue_size: %x\n}\n",
            src->crc,
            src->timestamp,
            src->key_size,

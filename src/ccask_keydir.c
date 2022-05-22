@@ -109,8 +109,42 @@ void ccask_kdrow_delete(ccask_kdrow* kdr) {
     free(kdr);
 }
 
+ccask_kdrow* ccask_kdrow_copy(ccask_kdrow* dest, const ccask_kdrow* src) {
+    if (!dest || !src) return 0;
+
+    dest->key_size = src->key_size;
+    dest->file_id = src->file_id;
+    dest->value_size = src->value_size;
+    dest->value_pos = src->value_pos;
+    dest->timestamp = src->timestamp;
+    dest->next = src->next;
+
+    dest->key = malloc(dest->key_size);
+    memcpy(dest->key, src->key, dest->key_size);
+
+    return dest;
+}
+
+uint32_t ccask_kdrow_fid(ccask_kdrow* kdr) {
+    if (!kdr) return UINT32_MAX;
+
+    return kdr->file_id;
+}
+
+uint32_t ccask_kdrow_vsize(ccask_kdrow* kdr) {
+    if (!kdr) return UINT32_MAX;
+
+    return kdr->value_size;
+}
+
+size_t ccask_kdrow_vpos(ccask_kdrow* kdr) {
+    if (!kdr) return SIZE_MAX;
+
+    return kdr->value_pos;
+}
+
 void ccask_kdrow_print(ccask_kdrow* kdr) {
-    printf("Key size: %u ", kdr->key_size);
+    printf("Key size: %u Value pos: %zu Value size: %u ", kdr->key_size, kdr->value_pos, kdr->value_size);
     printf("Key: [ ");
     for (uint32_t i = 0; i < kdr->key_size; i++) {
         printf("%hhx ", kdr->key[i]);
@@ -159,12 +193,12 @@ void ccask_keydir_delete(ccask_keydir* kd) {
 ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
     if(!entry->next) {
         entry->next = malloc(sizeof(ccask_kdrow));
-        *entry->next = *elem;
+        entry->next = ccask_kdrow_copy(entry->next, elem);
         return entry;
     }
 
     ccask_kdrow* next = entry->next;
-    ccask_kdrow* last = next;
+    ccask_kdrow* last = entry;
 
     while(next) {
         last = next;
@@ -172,7 +206,7 @@ ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
     }
 
     last->next = malloc(sizeof(ccask_kdrow));
-    *last->next = *elem;
+    last->next = ccask_kdrow_copy(last->next, elem);
 
     return last;
 }
@@ -180,7 +214,8 @@ ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
 ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow* elem) {
     size_t index = hash(elem->key_size, elem->key, kd->size);
     if (kd->entries[index].key_size == 0) {
-        kd->entries[index] = *elem;
+        ccask_kdrow* entry = kd->entries + index;
+        entry = ccask_kdrow_copy(entry, elem);
     } else {
         keydir_chain_insert(&(kd->entries[index]), elem);
     }

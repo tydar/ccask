@@ -3,14 +3,16 @@
 
 #include <stddef.h>
 #include <inttypes.h>
+#include <time.h>
 
 typedef struct ccask_header ccask_header;
 size_t HEADER_SIZE;
+size_t HEADER_BYTES;
 
 
 // initializers / destructors
-ccask_header* ccask_header_init(ccask_header* c, uint32_t crc, uint32_t timestamp, uint32_t key_size, uint32_t value_size);
-ccask_header* ccask_header_new(uint32_t crc, uint32_t timestamp, uint32_t key_size, uint32_t value_size);
+ccask_header* ccask_header_init(ccask_header* c, uint32_t crc, time_t timestamp, uint32_t key_size, uint32_t value_size);
+ccask_header* ccask_header_new(uint32_t crc, time_t timestamp, uint32_t key_size, uint32_t value_size);
 void ccask_header_destroy(ccask_header* c);
 void ccask_header_delete(ccask_header* c);
 

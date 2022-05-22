@@ -7,10 +7,25 @@
 #include "ccask_header.h"
 #include "ccask_kv.h"
 #include "ccask_keydir.h"
+#include "ccask_db.h"
 
 int main(void) {
     crc_init();
 
+    ccask_db* db = ccask_db_new("./ccask_file");
+
+    uint8_t key[5] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+    uint8_t value[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+
+    db = ccask_db_set(db, 5, key, 10, value);
+
+    ccask_get_result*  res = ccask_db_get(db, 5, key);
+
+    ccask_gr_print(res);
+
+    ccask_gr_delete(res);
+
+    /*
     uint8_t data[3] = { 65, 66, 67 };
     uint32_t crc = crc_compute(data, 3);
 
@@ -62,6 +77,7 @@ int main(void) {
 
     gotten = ccask_keydir_get(kd, 3, key2);
     ccask_kdrow_print(gotten);
+    */
 
     return EXIT_SUCCESS;
 }

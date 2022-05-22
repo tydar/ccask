@@ -109,6 +109,14 @@ ccask_kv* ccask_kv_deserialize(uint32_t key_size, uint32_t value_size, ccask_kv*
     return dest;
 }
 
+uint8_t* ccask_kv_value(uint8_t* dest, const ccask_kv* src) {
+    if (!dest || !src) return 0;
+
+    memcpy(dest, src->value, src->value_size);
+
+    return dest;
+}
+
 /**@brief pretty-print the ccask_kv *kv* */
 void ccask_kv_print(ccask_kv* kv) {
     printf("0x");

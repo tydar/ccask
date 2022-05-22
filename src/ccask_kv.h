@@ -16,6 +16,9 @@ void ccask_kv_delete(ccask_kv* kv);
 uint8_t* ccask_kv_serialize(uint8_t* dest, const ccask_kv* src);
 ccask_kv* ccask_kv_deserialize(uint32_t key_size, uint32_t value_size, ccask_kv* dest, uint8_t* src);
 
+// accessors
+uint8_t* ccask_kv_value(uint8_t* dest, const ccask_kv* src);
+
 // print/debug
 void ccask_kv_print(ccask_kv* kv);
 
