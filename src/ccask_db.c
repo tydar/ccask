@@ -93,6 +93,8 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path) {
 
         //TODO: check errors on fopen
         db->path = strncpy(db->path, path, strlen(path));
+		
+		//TODO: allow restarting the ccask process without clobbering the current file
         FILE* f = fopen(path, "wb+");
         if (f) db->file = f;
         if (!f) {
@@ -239,7 +241,7 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
     if (!ccask_header_deserialize(hdr, row_ptr)) return 0;
     ccask_header_print(hdr);
 
-    printf("Reading KV at index %zu\n", HEADER_SIZE);
+    printf("Reading KV at index %zu\n", HEADER_BYTES);
     ccask_kv* kv = ccask_kv_new(0, 0, 0, 0);
     if (!ccask_kv_deserialize(key_size, value_size, kv, (row_ptr+HEADER_BYTES))) return 0;
     ccask_kv_print(kv);
