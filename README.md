@@ -8,4 +8,5 @@ Writing TODOs here that aren't covered by reproducing the core functionality des
 
 * Implement more robust error handling (set errno values & read them)
 * Add DEBUG flags to have cleaner or more verbose logs
-* Implement
+* Implement reading an existing file & populating keydir
+* Remove redundant imports
