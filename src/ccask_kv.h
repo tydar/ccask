@@ -18,6 +18,8 @@ ccask_kv* ccask_kv_deserialize(uint32_t key_size, uint32_t value_size, ccask_kv*
 
 // accessors
 uint8_t* ccask_kv_value(uint8_t* dest, const ccask_kv* src);
+uint32_t ccask_kv_ksz(const ccask_kv* src);
+uint32_t ccask_kv_vsz(const ccask_kv* src);
 
 // print/debug
 void ccask_kv_print(ccask_kv* kv);
