@@ -122,16 +122,16 @@ uint8_t* ccask_kv_value(uint8_t* dest, const ccask_kv* src) {
 
 /**@brief return the key size from a ccask_kv*/
 uint32_t ccask_kv_ksz(const ccask_kv* src) {
-	if (!src) return 0;
+    if (!src) return 0;
 
-	return src->key_size;
+    return src->key_size;
 }
 
 /**@brief return the value size from a ccask_kv*/
 uint32_t ccask_kv_vsz(const ccask_kv* src) {
-	if (!src) return 0;
+    if (!src) return 0;
 
-	return src->value_size;
+    return src->value_size;
 }
 
 /**@brief pretty-print the ccask_kv *kv* */

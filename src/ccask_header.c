@@ -81,6 +81,37 @@ ccask_header* ccask_header_deserialize(ccask_header* dest, uint8_t* data) {
     return dest;
 }
 
+// accessors
+
+/**@brief return the timestamp of the ccask_header src if it is initialized*/
+time_t ccask_header_timestamp(const ccask_header* src) {
+    if (!src) return 0;
+
+    return src->timestamp;
+}
+
+/**@brief return the crc of the ccask_header src if it is initialized*/
+uint32_t ccask_header_crc(const ccask_header* src) {
+    if (!src) return 0;
+
+    return src->crc;
+}
+
+/**@brief return the key_size of the ccask_header src if it is initialized*/
+uint32_t ccask_header_ksz(const ccask_header* src) {
+    if (!src) return 0;
+
+    return src->key_size;
+}
+
+/**@brief return the value_size of the ccask_header src if it is initialized*/
+uint32_t ccask_header_vsz(const ccask_header* src) {
+    if (!src) return 0;
+
+    return src->value_size;
+}
+
+// print/debug
 
 void ccask_header_print(const ccask_header* src) {
     if (!src) return;
