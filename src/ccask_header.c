@@ -55,7 +55,19 @@ uint8_t* split_uint32_bytewise(uint8_t* dest, uint32_t src) {
 }
 
 uint32_t combine_uint8_to32(uint8_t* src) {
-    return src[3] | (src[2] << 8) | (src[1] << 16) | (src[0]) << 24;
+    return src[0] | (src[1] << 8) | (src[2] << 16) | (src[3]) << 24;
+}
+
+time_t combine_uint8_totimet(uint8_t* src) {
+	size_t tsz = sizeof(time_t);
+	time_t acc = 0;
+	for (size_t i = tsz-1; i < tsz; --i) {
+		printf("timet desr iter: %zu\n", i);
+		size_t offset = 8 * (tsz - i - 1);
+		acc |= src[i] << offset;
+	}
+
+	return acc;
 }
 
 uint8_t* ccask_header_serialize(uint8_t* dest, const ccask_header* src) {
@@ -73,10 +85,14 @@ uint8_t* ccask_header_serialize(uint8_t* dest, const ccask_header* src) {
 ccask_header* ccask_header_deserialize(ccask_header* dest, uint8_t* data) {
     if (!dest) return 0;
 
+	size_t index = 0;
     dest->crc = combine_uint8_to32(data);
-    dest->timestamp = combine_uint8_to32(data+4);
-    dest->key_size = combine_uint8_to32(data+8);
-    dest->value_size = combine_uint8_to32(data+12);
+	index += 4;
+    dest->timestamp = combine_uint8_totimet(data+index);
+	index += sizeof(time_t);
+    dest->key_size = combine_uint8_to32(data+index);
+	index += 4;
+    dest->value_size = combine_uint8_to32(data+index);
 
     return dest;
 }

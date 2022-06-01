@@ -111,6 +111,15 @@ ccask_kv* ccask_kv_deserialize(uint32_t key_size, uint32_t value_size, ccask_kv*
 
 // accessors
 
+/**@brief copy the key from a ccask_kv to an appopriately sized, already-allocated buffer dest*/
+uint8_t* ccask_kv_key(uint8_t* dest, const ccask_kv* src) {
+    if (!dest || !src) return 0;
+
+    memcpy(dest, src->key, src->key_size);
+
+    return dest;
+}
+
 /**@brief copy the value from a ccask_kv to an appropriately size, already-allocated buffer dest*/
 uint8_t* ccask_kv_value(uint8_t* dest, const ccask_kv* src) {
     if (!dest || !src) return 0;
