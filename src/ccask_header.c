@@ -59,15 +59,15 @@ uint32_t combine_uint8_to32(uint8_t* src) {
 }
 
 time_t combine_uint8_totimet(uint8_t* src) {
-	size_t tsz = sizeof(time_t);
-	time_t acc = 0;
-	for (size_t i = tsz-1; i < tsz; --i) {
-		printf("timet desr iter: %zu\n", i);
-		size_t offset = 8 * (tsz - i - 1);
-		acc |= src[i] << offset;
-	}
+    size_t tsz = sizeof(time_t);
+    time_t acc = 0;
+    for (size_t i = 0; i < tsz; ++i) {
+        printf("timet desr iter: %zu\n", i);
+        size_t offset = 8 * i;
+        acc |= src[i] << offset;
+    }
 
-	return acc;
+    return acc;
 }
 
 uint8_t* ccask_header_serialize(uint8_t* dest, const ccask_header* src) {
@@ -85,13 +85,13 @@ uint8_t* ccask_header_serialize(uint8_t* dest, const ccask_header* src) {
 ccask_header* ccask_header_deserialize(ccask_header* dest, uint8_t* data) {
     if (!dest) return 0;
 
-	size_t index = 0;
+    size_t index = 0;
     dest->crc = combine_uint8_to32(data);
-	index += 4;
+    index += 4;
     dest->timestamp = combine_uint8_totimet(data+index);
-	index += sizeof(time_t);
+    index += sizeof(time_t);
     dest->key_size = combine_uint8_to32(data+index);
-	index += 4;
+    index += 4;
     dest->value_size = combine_uint8_to32(data+index);
 
     return dest;

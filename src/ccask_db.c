@@ -75,7 +75,7 @@ void ccask_gr_print(ccask_get_result* gr) {
     for (uint32_t i = 0; i < gr->value_size; i++) {
         printf("\t%hhu\n", gr->value[i]);
     }
-    printf("}\n");
+    printf("} CRC?: %s\n", gr->crc_passed ? "true" : "false");
 }
 
 
@@ -93,8 +93,8 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path) {
 
         //TODO: check errors on fopen
         db->path = strncpy(db->path, path, strlen(path));
-		
-		//TODO: allow restarting the ccask process without clobbering the current file
+
+        //TODO: allow restarting the ccask process without clobbering the current file
         FILE* f = fopen(path, "wb+");
         if (f) db->file = f;
         if (!f) {
@@ -167,6 +167,12 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
     printf("Writing V at index %zu\n", index);
     memcpy(row+index, value, value_size);
 
+    uint8_t* after_crc = row+sizeof(uint32_t);
+    for (size_t i = 0; i < row_size-sizeof(uint32_t); i++) {
+        printf("%x ", after_crc[i]);
+    }
+    puts(" ");
+
     // calc the crc -- assuming crc_init has been called elsewhere.
     uint32_t crc = crc_compute(row+sizeof(uint32_t), row_size-sizeof(uint32_t));
     memcpy(row, &crc, sizeof(crc));
@@ -201,6 +207,94 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
 
 
     return db;
+}
+
+/**@brief take each byte from a uint32_t and write it to the index in a uint8_t* */
+// TODO: dedup this between here and ccask_header
+uint8_t* split_uint32t_bytewise(uint8_t* dest, uint32_t src, size_t index) {
+    if (!dest) return 0;
+
+    dest[index] = (src & 0x000000ff);
+    dest[index+1] = (src & 0x0000ff00) >> 8;
+    dest[index+2] = (src & 0x00ff0000) >> 16;
+    dest[index+3] = (src & 0xff000000) >> 24;
+
+    return dest;
+}
+
+/**@brief take each byte from a time_t and write it to the index in a uint8_t*. */
+uint8_t* split_timet_bytewise(uint8_t* dest, time_t src, size_t index) {
+    if (!dest) return 0;
+
+    size_t tsz = sizeof(time_t);
+    uint8_t* ptr = dest + index;
+
+    for (size_t i = tsz-1; i < tsz; --i) {
+        time_t mask = 0xff << (i * 8);
+        time_t offset = 8 * i;
+        ptr[index+i] = (src & mask) >> offset;
+    }
+
+    return dest;
+}
+
+/**@brief given a header struct and key-value struct, return true if the CRC in the header
+ * 		  matches the CRC computed for the header and key-value.
+ */
+bool crc_check(const ccask_header* hdr, const ccask_kv* kv) {
+    if (!hdr || !kv) return false;
+
+    time_t ts = ccask_header_timestamp(hdr);
+    uint32_t ksz = ccask_header_ksz(hdr);
+    uint32_t vsz = ccask_header_vsz(hdr);
+    uint32_t crc = ccask_header_crc(hdr);
+
+    printf("hdr ksz: %d kv ksz: %d\n", ksz, ccask_kv_ksz(kv));
+    printf("hdr vsz: %d kv vsz: %d\n", vsz, ccask_kv_vsz(kv));
+    printf("ts: %zu\n", ts);
+
+    if (ksz != ccask_kv_ksz(kv)) return false;
+    if (vsz != ccask_kv_vsz(kv)) return false;
+
+    uint8_t* key = malloc(ksz);
+    uint8_t* val = malloc(vsz);
+    key = ccask_kv_key(key, kv);
+    val = ccask_kv_value(val, kv);
+
+    // create a buffer that can hold everything but the CRC
+    size_t row_size = HEADER_BYTES + ksz + vsz - sizeof(uint32_t);
+    uint8_t* row_ptr = malloc(row_size);
+
+    size_t index = 0;
+    split_timet_bytewise(row_ptr, ts, index);
+    index += sizeof(time_t);
+    split_uint32t_bytewise(row_ptr, ccask_header_ksz(hdr), index);
+    index += sizeof(uint32_t);
+    split_uint32t_bytewise(row_ptr, ccask_header_vsz(hdr), index);
+    index += sizeof(uint32_t);
+    memcpy(row_ptr + index, key, ksz);
+    index += ksz;
+    memcpy(row_ptr + index, val, vsz);
+    index += vsz;
+
+    for (size_t i = 0; i < row_size; i++) {
+        printf("%x ", row_ptr[i]);
+    }
+    puts(" ");
+    uint32_t computed_crc = crc_compute(row_ptr, row_size);
+
+    row_ptr = 0;
+    key = 0;
+    val = 0;
+    free(row_ptr);
+    free(key);
+    free(val);
+
+    printf("Computed CRC: %x Read CRC: %x\n", computed_crc, crc);
+
+    if (computed_crc == crc) return true;
+
+    return false;
 }
 
 /**
@@ -250,7 +344,8 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
     value = ccask_kv_value(value, kv);
 
     //TODO: implement CRC check on read
-    ccask_get_result* gr = ccask_gr_new(value_size, value, true);
+    bool crc_flag = crc_check(hdr, kv);
+    ccask_get_result* gr = ccask_gr_new(value_size, value, crc_flag);
 
     ccask_kv_delete(kv);
     ccask_header_delete(hdr);
