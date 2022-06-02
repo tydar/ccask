@@ -152,26 +152,15 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
     // but it doesn't really make sense since we need to construct most
     // of the row in order to calculate the CRC. Is there a better way to do this?
     size_t index = sizeof(uint32_t); // start offset from the CRC
-    printf("Writing TS at index %zu\n", index);
     memcpy(row+index, &ts, sizeof(ts));
     index += sizeof(ts);
-    printf("Writing KS at index %zu\n", index);
     memcpy(row+index, &key_size, sizeof(key_size));
     index += sizeof(key_size);
-    printf("Writing VS at index %zu\n", index);
     memcpy(row+index, &value_size, sizeof(value_size));
     index += sizeof(value_size);
-    printf("Writing K at index %zu\n", index);
     memcpy(row+index, key, key_size);
     index += key_size;
-    printf("Writing V at index %zu\n", index);
     memcpy(row+index, value, value_size);
-
-    uint8_t* after_crc = row+sizeof(uint32_t);
-    for (size_t i = 0; i < row_size-sizeof(uint32_t); i++) {
-        printf("%x ", after_crc[i]);
-    }
-    puts(" ");
 
     // calc the crc -- assuming crc_init has been called elsewhere.
     uint32_t crc = crc_compute(row+sizeof(uint32_t), row_size-sizeof(uint32_t));
@@ -199,8 +188,6 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
     // now create the keydir entry
     ccask_kdrow* kdr = ccask_kdrow_new(key_size, key, db->file_id, value_size, value_pos, ts);
     if(!ccask_keydir_insert(db->keydir, kdr)) return 0;
-
-    ccask_kdrow_print(kdr);
 
     free(row);
     ccask_kdrow_delete(kdr); // I believe it is safe to do this bc ccask_keydir_insert ends up allocating its own memory.
@@ -249,10 +236,6 @@ bool crc_check(const ccask_header* hdr, const ccask_kv* kv) {
     uint32_t vsz = ccask_header_vsz(hdr);
     uint32_t crc = ccask_header_crc(hdr);
 
-    printf("hdr ksz: %d kv ksz: %d\n", ksz, ccask_kv_ksz(kv));
-    printf("hdr vsz: %d kv vsz: %d\n", vsz, ccask_kv_vsz(kv));
-    printf("ts: %zu\n", ts);
-
     if (ksz != ccask_kv_ksz(kv)) return false;
     if (vsz != ccask_kv_vsz(kv)) return false;
 
@@ -277,10 +260,6 @@ bool crc_check(const ccask_header* hdr, const ccask_kv* kv) {
     memcpy(row_ptr + index, val, vsz);
     index += vsz;
 
-    for (size_t i = 0; i < row_size; i++) {
-        printf("%x ", row_ptr[i]);
-    }
-    puts(" ");
     uint32_t computed_crc = crc_compute(row_ptr, row_size);
 
     row_ptr = 0;
@@ -289,8 +268,6 @@ bool crc_check(const ccask_header* hdr, const ccask_kv* kv) {
     free(row_ptr);
     free(key);
     free(val);
-
-    printf("Computed CRC: %x Read CRC: %x\n", computed_crc, crc);
 
     if (computed_crc == crc) return true;
 
@@ -333,17 +310,13 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
 
     ccask_header* hdr = ccask_header_new(0, 0, 0, 0);
     if (!ccask_header_deserialize(hdr, row_ptr)) return 0;
-    ccask_header_print(hdr);
 
-    printf("Reading KV at index %zu\n", HEADER_BYTES);
     ccask_kv* kv = ccask_kv_new(0, 0, 0, 0);
     if (!ccask_kv_deserialize(key_size, value_size, kv, (row_ptr+HEADER_BYTES))) return 0;
-    ccask_kv_print(kv);
 
     uint8_t* value = malloc(value_size);
     value = ccask_kv_value(value, kv);
 
-    //TODO: implement CRC check on read
     bool crc_flag = crc_check(hdr, kv);
     ccask_get_result* gr = ccask_gr_new(value_size, value, crc_flag);
 

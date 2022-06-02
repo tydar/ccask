@@ -62,7 +62,6 @@ time_t combine_uint8_totimet(uint8_t* src) {
     size_t tsz = sizeof(time_t);
     time_t acc = 0;
     for (size_t i = 0; i < tsz; ++i) {
-        printf("timet desr iter: %zu\n", i);
         size_t offset = 8 * i;
         acc |= src[i] << offset;
     }
