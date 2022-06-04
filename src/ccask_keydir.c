@@ -53,11 +53,11 @@ size_t hash(uint32_t key_size, uint8_t* key, size_t table_size) {
 }
 
 ccask_kdrow* init_entries(size_t size, ccask_kdrow* entries) {
+	ccask_kdrow* ptr = entries;
     for (size_t i = 0; i < size; i++) {
-        entries[i] = (ccask_kdrow) {
-            0
-        };
-    }
+		ptr = entries + i;
+        ptr = ccask_kdrow_init(ptr, 0, 0, 0, 0, 0, 0);
+	}
 
     return entries;
 }
@@ -105,8 +105,10 @@ void ccask_kdrow_destroy(ccask_kdrow* kdr) {
 }
 
 void ccask_kdrow_delete(ccask_kdrow* kdr) {
-    ccask_kdrow_destroy(kdr);
-    free(kdr);
+	if (kdr) {
+		ccask_kdrow_destroy(kdr);
+		free(kdr);
+	}
 }
 
 ccask_kdrow* ccask_kdrow_copy(ccask_kdrow* dest, const ccask_kdrow* src) {
@@ -119,7 +121,8 @@ ccask_kdrow* ccask_kdrow_copy(ccask_kdrow* dest, const ccask_kdrow* src) {
     dest->timestamp = src->timestamp;
     dest->next = src->next;
 
-    dest->key = realloc(dest->key, dest->key_size);
+	if (dest->key) free(dest->key);
+    dest->key = malloc(dest->key_size);
     memcpy(dest->key, src->key, dest->key_size);
 
     return dest;
@@ -154,13 +157,12 @@ void ccask_kdrow_print(ccask_kdrow* kdr) {
 
 /*------------------keydir functions------------------*/
 ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size) {
-    ccask_kdrow* entries = malloc(size*sizeof(ccask_kdrow));
-    init_entries(size, entries);
     if (kd) {
         *kd = (ccask_keydir) {
             .size = size,
-            .entries = entries,
+            .entries = malloc(size*sizeof(ccask_kdrow)),
         };
+		init_entries(size, kd->entries);
     } else {
         *kd = (ccask_keydir) {
             0
@@ -177,6 +179,12 @@ ccask_keydir* ccask_keydir_new(size_t size) {
 
 void ccask_keydir_destroy(ccask_keydir* kd) {
     if (kd) {
+		for (size_t i = 0; i < kd->size; i++) {
+			if (kd->entries[i].key_size != 0) {
+				ccask_kdrow_destroy(kd->entries+i);
+			}
+		}
+
         free(kd->entries);
         *kd = (ccask_keydir) {
             0
@@ -191,8 +199,9 @@ void ccask_keydir_delete(ccask_keydir* kd) {
 
 /**@brief walk the chain of elements until the next pointer is null, then insert our new element there*/
 ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
-    if(!entry->next) {
+    if(entry->next == 0) {
         entry->next = malloc(sizeof(ccask_kdrow));
+		entry->next->key = 0;
         entry->next = ccask_kdrow_copy(entry->next, elem);
         return entry;
     }
@@ -206,6 +215,7 @@ ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
     }
 
     last->next = malloc(sizeof(ccask_kdrow));
+	last->next->key = 0;
     last->next = ccask_kdrow_copy(last->next, elem);
 
     return last;

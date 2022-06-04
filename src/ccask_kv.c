@@ -23,19 +23,16 @@ struct ccask_kv {
  * @param value a pointer to the first byte of the value.
  */
 ccask_kv* ccask_kv_init(ccask_kv* kv, uint32_t key_size, uint32_t value_size, const uint8_t* key, const uint8_t* value) {
-    uint8_t* nkey = malloc(key_size);
-    memcpy(nkey, key, key_size);
-
-    uint8_t* nval = malloc(value_size);
-    memcpy(nval, value, value_size);
-
-    if (kv && nkey && nval) {
+    if (kv && key && value) {
         *kv = (ccask_kv) {
             .key_size = key_size,
             .value_size = value_size,
-            .key = nkey,
-            .value = nval,
+            .key = malloc(key_size),
+            .value = malloc(value_size),
         };
+
+		memcpy(kv->key, key, key_size);
+		memcpy(kv->value, value, value_size);
     } else {
         *kv = (ccask_kv) {
             .key_size = 0,

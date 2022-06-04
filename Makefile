@@ -16,7 +16,7 @@ MAIN_OBJS := $(filter-out $(test),$(OBJS))
 TEST_OBJS := $(filter-out $(main),$(OBJS)) 
 
 DEPS := $(MAIN_OBJS:.o=.d)
-TEST_DEPS := $(TEST_OBJS:.o.d)
+TEST_DEPS := $(TEST_OBJS:.o=.d)
 
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))

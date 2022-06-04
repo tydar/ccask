@@ -159,6 +159,13 @@ ccask_db* ccask_db_populate(ccask_db* db) {
         iter = ccask_db_popnext(db);
     }
 
+	if (fseek(db->file, 0, SEEK_SET) == -1) {
+		perror("seek error");
+		errno = 0;
+	}
+
+	db->file_pos = ftell(db->file);
+
     return db;
 }
 
@@ -207,7 +214,8 @@ ccask_db* ccask_db_new(const char* path) {
 void ccask_db_destroy(ccask_db* db) {
     if (db) {
         free(db->path);
-        ccask_keydir_delete(db->keydir);
+        //free(db->keydir);
+		ccask_keydir_delete(db->keydir);
         fclose(db->file);
         *db = (ccask_db) {
             0
@@ -256,7 +264,7 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
     memcpy(row, &crc, sizeof(crc));
 
     if (ftell(db->file) != db->file_pos) {
-        if(!fseek(db->file, db->file_pos, SEEK_SET)) {
+        if(fseek(db->file, db->file_pos, SEEK_SET) == -1) {
             perror("seek error");
             errno = 0;
             return 0;
@@ -387,7 +395,7 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
         return 0;
     }
 
-    if (fseek(db->file, value_pos, SEEK_SET) != 0) {
+    if (fseek(db->file, value_pos, SEEK_SET) == -1) {
         perror("seek error");
         errno = 0;
         return 0;
