@@ -81,6 +81,87 @@ void ccask_gr_print(ccask_get_result* gr) {
 
 //ccask_db functions
 
+// internal ccask_db initialization APIs
+// used to populate the keydir when the software starts iff a ccask file is present
+
+/**@brief internal fn to populate next keydir entry*/
+ccask_db* ccask_db_popnext(ccask_db* db) {
+    FILE* file = db->file;
+    size_t pos = ftell(file);
+    uint8_t* hdrb = malloc(HEADER_BYTES);
+    size_t hdr_n = fread(hdrb, 1, HEADER_BYTES, file);
+    if (hdr_n < HEADER_BYTES) {
+        free(hdrb);
+        return 0;
+    }
+
+    ccask_header* hdr = ccask_header_new(0, 0, 0, 0);
+    if (!ccask_header_deserialize(hdr, hdrb)) {
+        free(hdrb);
+        ccask_header_delete(hdr);
+        return 0;
+    }
+
+    uint32_t ksz = ccask_header_ksz(hdr);
+    uint32_t vsz = ccask_header_vsz(hdr);
+
+    uint8_t* kvb = malloc(ksz + vsz);
+    size_t kv_n = fread(kvb, 1, ksz+vsz, file);
+    if (kv_n < ksz+vsz) {
+        free(hdrb);
+        free(kvb);
+        ccask_header_delete(hdr);
+        return 0; // read error TODO: handle
+    }
+
+    ccask_kv* kv = ccask_kv_new(0, 0, 0, 0);
+    if (!ccask_kv_deserialize(ksz, vsz, kv, kvb)) {
+        free(hdrb);
+        free(kvb);
+        ccask_header_delete(hdr);
+        ccask_kv_delete(kv);
+        return 0; // parse error TODO
+    }
+
+    uint8_t* key = malloc(ksz);
+    key = ccask_kv_key(key, kv);
+
+    // TODO: file ID
+    ccask_kdrow* kdr = ccask_kdrow_new(ksz, key, 0, vsz, pos, time(NULL));
+    if (!ccask_keydir_insert(db->keydir, kdr)) {
+        free(key);
+        free(hdrb);
+        free(kvb);
+
+        ccask_header_delete(hdr);
+        ccask_kv_delete(kv);
+        ccask_kdrow_delete(kdr);
+        return 0; // keydir insert error TODO
+    }
+
+    free(hdrb);
+    free(kvb);
+    free(key);
+
+    ccask_header_delete(hdr);
+    ccask_kv_delete(kv);
+    ccask_kdrow_delete(kdr);
+
+    return db;
+}
+
+/**@brief given a malloc'd and initialized db and a valid file populates the keydir*/
+ccask_db* ccask_db_populate(ccask_db* db) {
+    if (!db) return 0;
+    ccask_db* iter = ccask_db_popnext(db);
+
+    while(iter) {
+        iter = ccask_db_popnext(db);
+    }
+
+    return db;
+}
+
 ccask_db* ccask_db_init(ccask_db* db, const char* path) {
     if (db && path) {
         *db = (ccask_db) {
@@ -95,11 +176,18 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path) {
         db->path = strncpy(db->path, path, strlen(path));
 
         //TODO: allow restarting the ccask process without clobbering the current file
-        FILE* f = fopen(path, "wb+");
-        if (f) db->file = f;
+        FILE* f = fopen(path, "ab+");
+
         if (!f) {
             perror("fopen");
             errno = 0;
+        } else {
+            // if the file existed with content we want to rewind to the start
+            if (ftell(f) != 0) fseek(f, 0, SEEK_SET);
+            db->file = f;
+            if (!ccask_db_populate(db)) *db = (ccask_db) {
+                0
+            };
         }
     } else {
         *db = (ccask_db) {
@@ -131,6 +219,7 @@ void ccask_db_delete(ccask_db* db) {
     ccask_db_destroy(db);
     free(db);
 }
+
 
 /**
  * set implementation
@@ -262,9 +351,6 @@ bool crc_check(const ccask_header* hdr, const ccask_kv* kv) {
 
     uint32_t computed_crc = crc_compute(row_ptr, row_size);
 
-    row_ptr = 0;
-    key = 0;
-    val = 0;
     free(row_ptr);
     free(key);
     free(val);
@@ -289,13 +375,17 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
     if (!db) return 0;
 
     ccask_kdrow* kdr = ccask_keydir_get(db->keydir, key_size, key);
-    if (!kdr) return 0;
+    if (!kdr) {
+        return 0;
+    }
 
     uint32_t file_id = ccask_kdrow_fid(kdr);
     uint32_t value_size = ccask_kdrow_vsize(kdr);
     size_t value_pos = ccask_kdrow_vpos(kdr);
 
-    if (file_id == UINT32_MAX || value_size == UINT32_MAX || value_pos == SIZE_MAX) return 0;
+    if (file_id == UINT32_MAX || value_size == UINT32_MAX || value_pos == SIZE_MAX) {
+        return 0;
+    }
 
     if (fseek(db->file, value_pos, SEEK_SET) != 0) {
         perror("seek error");
@@ -309,10 +399,21 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
     size_t read_size = fread(row_ptr, row_size, 1, db->file);
 
     ccask_header* hdr = ccask_header_new(0, 0, 0, 0);
-    if (!ccask_header_deserialize(hdr, row_ptr)) return 0;
+    if (!ccask_header_deserialize(hdr, row_ptr)) {
+        ccask_header_delete(hdr);
+
+        free(row_ptr);
+        return 0;
+    }
 
     ccask_kv* kv = ccask_kv_new(0, 0, 0, 0);
-    if (!ccask_kv_deserialize(key_size, value_size, kv, (row_ptr+HEADER_BYTES))) return 0;
+    if (!ccask_kv_deserialize(key_size, value_size, kv, (row_ptr+HEADER_BYTES))) {
+        ccask_header_delete(hdr);
+        ccask_kv_delete(kv);
+
+        free(row_ptr);
+        return 0;
+    }
 
     uint8_t* value = malloc(value_size);
     value = ccask_kv_value(value, kv);
@@ -323,6 +424,7 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
     ccask_kv_delete(kv);
     ccask_header_delete(hdr);
     free(row_ptr);
+    free(value);
 
     return gr;
 }

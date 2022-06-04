@@ -1,6 +1,3 @@
-#include <inttypes.h>
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "crc.h"

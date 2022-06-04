@@ -119,7 +119,7 @@ ccask_kdrow* ccask_kdrow_copy(ccask_kdrow* dest, const ccask_kdrow* src) {
     dest->timestamp = src->timestamp;
     dest->next = src->next;
 
-    dest->key = malloc(dest->key_size);
+    dest->key = realloc(dest->key, dest->key_size);
     memcpy(dest->key, src->key, dest->key_size);
 
     return dest;
@@ -212,6 +212,7 @@ ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
 }
 
 ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow* elem) {
+    if (!kd || !elem) return 0;
     size_t index = hash(elem->key_size, elem->key, kd->size);
     if (kd->entries[index].key_size == 0) {
         ccask_kdrow* entry = kd->entries + index;
