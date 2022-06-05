@@ -65,9 +65,12 @@ ccask_kdrow* init_entries(size_t size, ccask_kdrow* entries) {
 /*---------------kdrow functions-------------*/
 ccask_kdrow* ccask_kdrow_init(ccask_kdrow* kdr, uint32_t key_size, uint8_t* key,
                               uint32_t file_id, uint32_t value_size, uint32_t value_pos, time_t timestamp) {
-    uint8_t* nkey = malloc(key_size);
-    memcpy(nkey, key, key_size);
-    if (kdr && nkey) {
+    if (kdr) {
+		uint8_t* nkey = 0;
+		if (key_size > 0) {
+			nkey = malloc(key_size);
+			memcpy(nkey, key, key_size);
+		}
         *kdr = (ccask_kdrow) {
             .key_size = key_size,
             .key = nkey,
@@ -96,6 +99,7 @@ ccask_kdrow* ccask_kdrow_new(uint32_t key_size, uint8_t* key, uint32_t file_id,
 /**@brief zeroes out a ccask_kdrow obj and frees any allocated memory*/
 void ccask_kdrow_destroy(ccask_kdrow* kdr) {
     if (kdr) {
+		if(kdr->next) ccask_kdrow_delete(kdr->next);
         kdr->next = 0;
         free(kdr->key);
         *kdr = (ccask_kdrow) {
@@ -200,9 +204,10 @@ void ccask_keydir_delete(ccask_keydir* kd) {
 /**@brief walk the chain of elements until the next pointer is null, then insert our new element there*/
 ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
     if(entry->next == 0) {
-        entry->next = malloc(sizeof(ccask_kdrow));
-		entry->next->key = 0;
-        entry->next = ccask_kdrow_copy(entry->next, elem);
+        ccask_kdrow* tmp = malloc(sizeof(ccask_kdrow));
+		tmp->key = 0;
+        if (!ccask_kdrow_copy(tmp, elem)) return 0;
+		entry->next = tmp;
         return entry;
     }
 
