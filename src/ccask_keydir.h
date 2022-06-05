@@ -36,4 +36,10 @@ void ccask_keydir_delete(ccask_keydir* kd);
 ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow* elem);
 ccask_kdrow* ccask_keydir_get(ccask_keydir* kd, uint32_t key_size, uint8_t* key);
 
+// internal fns that we want to expose for testing only
+#ifdef _TEST_
+ccask_kdrow* ccask_kdrow_copy(ccask_kdrow* dest, const ccask_kdrow* src);
+size_t KDROW_SIZE;
+#endif
+
 #endif

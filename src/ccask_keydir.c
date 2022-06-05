@@ -32,6 +32,8 @@ struct ccask_keydir {
     ccask_kdrow* entries;
 };
 
+size_t KDROW_SIZE = sizeof(ccask_kdrow);
+
 /*-----------------utility functions-------------------*/
 
 /**@brief FNV-1a hash of the key *key* of length *key_size*.
