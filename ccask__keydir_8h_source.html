@@ -70,53 +70,53 @@ $(function() {
 <div class="title">ccask_keydir.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef _CCASK_KEYDIR_H</span></div>
+<a href="ccask__keydir_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef _CCASK_KEYDIR_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define _CCASK_KEYDIR_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;inttypes.h&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;time.h&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// ccask_kdrow</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structccask__kdrow.html">ccask_kdrow</a> <a class="code" href="structccask__kdrow.html">ccask_kdrow</a>;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// ccask_kdrow init / delete</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_kdrow_init(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr, uint32_t key_size, uint8_t* key,</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                              uint32_t file_id, uint32_t value_size, uint32_t value_pos, time_t timestamp);</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_kdrow_new(uint32_t key_size, uint8_t* key, uint32_t file_id,</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;                             uint32_t value_size, uint32_t value_pos, time_t timestamp);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordtype">void</span> <a class="code" href="ccask__keydir_8c.html#a6d5be3e276646fcd879dacf2272c3342">ccask_kdrow_destroy</a>(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">void</span> ccask_kdrow_delete(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// attr accessors</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;uint32_t ccask_kdrow_fid(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;uint32_t ccask_kdrow_vsize(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keywordtype">size_t</span> ccask_kdrow_vpos(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">void</span> ccask_kdrow_print(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// ccask_kdrow</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structccask__kdrow.html">ccask_kdrow</a> <a class="code" href="structccask__kdrow.html">ccask_kdrow</a>;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">// ccask_kdrow init / delete</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_kdrow_init(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr, uint32_t key_size, uint8_t* key,</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;                              uint32_t file_id, uint32_t value_size, uint32_t value_pos, time_t timestamp);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_kdrow_new(uint32_t key_size, uint8_t* key, uint32_t file_id,</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                             uint32_t value_size, uint32_t value_pos, time_t timestamp);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">void</span> <a class="code" href="ccask__keydir_8h.html#a6d5be3e276646fcd879dacf2272c3342">ccask_kdrow_destroy</a>(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keywordtype">void</span> ccask_kdrow_delete(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// attr accessors</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;uint32_t ccask_kdrow_fid(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;uint32_t ccask_kdrow_vsize(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keywordtype">size_t</span> ccask_kdrow_vpos(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">// ccask_keydir</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structccask__keydir.html">ccask_keydir</a> <a class="code" href="structccask__keydir.html">ccask_keydir</a>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">// ccask_keydir init / delete</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<a class="code" href="structccask__keydir.html">ccask_keydir</a>* ccask_keydir_init(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<a class="code" href="structccask__keydir.html">ccask_keydir</a>* ccask_keydir_new(<span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keywordtype">void</span> ccask_keydir_destroy(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keywordtype">void</span> ccask_keydir_delete(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">// get/set</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<a class="code" href="structccask__keydir.html">ccask_keydir</a>* ccask_keydir_insert(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd, <a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* elem);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_keydir_get(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd, uint32_t key_size, uint8_t* key);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">// internal fns that we want to expose for testing only</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#ifdef _TEST_</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_kdrow_copy(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* dest, <span class="keyword">const</span> <a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* src);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keywordtype">size_t</span> KDROW_SIZE;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">void</span> ccask_kdrow_print(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* kdr);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">// ccask_keydir</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structccask__keydir.html">ccask_keydir</a> <a class="code" href="structccask__keydir.html">ccask_keydir</a>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">// ccask_keydir init / delete</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<a class="code" href="structccask__keydir.html">ccask_keydir</a>* ccask_keydir_init(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<a class="code" href="structccask__keydir.html">ccask_keydir</a>* ccask_keydir_new(<span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keywordtype">void</span> ccask_keydir_destroy(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keywordtype">void</span> ccask_keydir_delete(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// get/set</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<a class="code" href="structccask__keydir.html">ccask_keydir</a>* ccask_keydir_insert(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd, <a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* elem);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_keydir_get(<a class="code" href="structccask__keydir.html">ccask_keydir</a>* kd, uint32_t key_size, uint8_t* key);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">// internal fns that we want to expose for testing only</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#ifdef _TEST_</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* ccask_kdrow_copy(<a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* dest, <span class="keyword">const</span> <a class="code" href="structccask__kdrow.html">ccask_kdrow</a>* src);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keywordtype">size_t</span> KDROW_SIZE;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="accask__keydir_8c_html_a6d5be3e276646fcd879dacf2272c3342"><div class="ttname"><a href="ccask__keydir_8c.html#a6d5be3e276646fcd879dacf2272c3342">ccask_kdrow_destroy</a></div><div class="ttdeci">void ccask_kdrow_destroy(ccask_kdrow *kdr)</div><div class="ttdoc">zeroes out a ccask_kdrow obj and frees any allocated memory</div><div class="ttdef"><b>Definition:</b> ccask_keydir.c:106</div></div>
+<div class="ttc" id="accask__keydir_8h_html_a6d5be3e276646fcd879dacf2272c3342"><div class="ttname"><a href="ccask__keydir_8h.html#a6d5be3e276646fcd879dacf2272c3342">ccask_kdrow_destroy</a></div><div class="ttdeci">void ccask_kdrow_destroy(ccask_kdrow *kdr)</div><div class="ttdoc">zeroes out a ccask_kdrow obj and frees any allocated memory</div><div class="ttdef"><b>Definition:</b> ccask_keydir.c:106</div></div>
 <div class="ttc" id="astructccask__kdrow_html"><div class="ttname"><a href="structccask__kdrow.html">ccask_kdrow</a></div><div class="ttdef"><b>Definition:</b> ccask_keydir.c:24</div></div>
 <div class="ttc" id="astructccask__keydir_html"><div class="ttname"><a href="structccask__keydir.html">ccask_keydir</a></div><div class="ttdef"><b>Definition:</b> ccask_keydir.c:34</div></div>
 <!-- start footer part -->

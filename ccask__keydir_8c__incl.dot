@@ -17,7 +17,7 @@ digraph "src/ccask_keydir.c"
   Node1 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node7 [label="time.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
   Node1 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node8 [label="ccask_keydir.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ccask__keydir_8h_source.html",tooltip=" "];
+  Node8 [label="ccask_keydir.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ccask__keydir_8h.html",tooltip=" "];
   Node8 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node8 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node8 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];

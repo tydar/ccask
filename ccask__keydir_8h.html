@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CCask: src/ccask_keydir.c File Reference</title>
+<title>CCask: src/ccask_keydir.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -67,45 +67,41 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Data Structures</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">ccask_keydir.c File Reference</div>  </div>
+<div class="title">ccask_keydir.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><a class="el" href="structccask__keydir.html">ccask_keydir</a> implements the keydir and kdrow structs and methods  
-<a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;inttypes.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
-<code>#include &lt;inttypes.h&gt;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
-<code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="ccask__keydir_8h_source.html">ccask_keydir.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
-Include dependency graph for ccask_keydir.c:</div>
+Include dependency graph for ccask_keydir.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="ccask__keydir_8c__incl.png" border="0" usemap="#src_2ccask__keydir_8c" alt=""/></div>
+<div class="center"><img src="ccask__keydir_8h__incl.png" border="0" usemap="#src_2ccask__keydir_8h" alt=""/></div>
 <!-- MAP 0 -->
 </div>
-</div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structccask__kdrow.html">ccask_kdrow</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structccask__keydir.html">ccask_keydir</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="ccask__keydir_8h__dep__incl.png" border="0" usemap="#src_2ccask__keydir_8hdep" alt=""/></div>
+<!-- MAP 1 -->
+</div>
+</div>
+<p><a href="ccask__keydir_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a5517aff58b60cab25278464ebc5e8ed5"><td class="memItemLeft" align="right" valign="top"><a id="a5517aff58b60cab25278464ebc5e8ed5"></a>
+typedef struct <a class="el" href="structccask__kdrow.html">ccask_kdrow</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow</b></td></tr>
+<tr class="separator:a5517aff58b60cab25278464ebc5e8ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6aba32410421753ac717444d08089d67"><td class="memItemLeft" align="right" valign="top"><a id="a6aba32410421753ac717444d08089d67"></a>
+typedef struct <a class="el" href="structccask__keydir.html">ccask_keydir</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir</b></td></tr>
+<tr class="separator:a6aba32410421753ac717444d08089d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a5dabc32c24ea4490d3946ef14dca3e74"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__keydir_8c.html#a5dabc32c24ea4490d3946ef14dca3e74">hash</a> (uint32_t key_size, uint8_t *key, size_t table_size)</td></tr>
-<tr class="memdesc:a5dabc32c24ea4490d3946ef14dca3e74"><td class="mdescLeft">&#160;</td><td class="mdescRight">FNV-1a hash of the key <em>key</em> of length <em>key_size</em>.  <a href="ccask__keydir_8c.html#a5dabc32c24ea4490d3946ef14dca3e74">More...</a><br /></td></tr>
-<tr class="separator:a5dabc32c24ea4490d3946ef14dca3e74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae97375792b64aa64523204c86fb4eaed"><td class="memItemLeft" align="right" valign="top"><a id="ae97375792b64aa64523204c86fb4eaed"></a>
-<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>init_entries</b> (size_t size, <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *entries)</td></tr>
-<tr class="separator:ae97375792b64aa64523204c86fb4eaed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b905a74ecca4e51730d4af177b3f3fe"><td class="memItemLeft" align="right" valign="top"><a id="a6b905a74ecca4e51730d4af177b3f3fe"></a>
 <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow_init</b> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *kdr, uint32_t key_size, uint8_t *key, uint32_t file_id, uint32_t value_size, uint32_t value_pos, time_t timestamp)</td></tr>
 <tr class="separator:a6b905a74ecca4e51730d4af177b3f3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,15 +109,12 @@ Functions</h2></td></tr>
 <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow_new</b> (uint32_t key_size, uint8_t *key, uint32_t file_id, uint32_t value_size, uint32_t value_pos, time_t timestamp)</td></tr>
 <tr class="separator:a4184bc595a6d4af94fddd36c71d14ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d5be3e276646fcd879dacf2272c3342"><td class="memItemLeft" align="right" valign="top"><a id="a6d5be3e276646fcd879dacf2272c3342"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__keydir_8c.html#a6d5be3e276646fcd879dacf2272c3342">ccask_kdrow_destroy</a> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *kdr)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__keydir_8h.html#a6d5be3e276646fcd879dacf2272c3342">ccask_kdrow_destroy</a> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *kdr)</td></tr>
 <tr class="memdesc:a6d5be3e276646fcd879dacf2272c3342"><td class="mdescLeft">&#160;</td><td class="mdescRight">zeroes out a <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> obj and frees any allocated memory <br /></td></tr>
 <tr class="separator:a6d5be3e276646fcd879dacf2272c3342"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab976c66724f0d8ddad8df2cec503ce1"><td class="memItemLeft" align="right" valign="top"><a id="aab976c66724f0d8ddad8df2cec503ce1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow_delete</b> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *kdr)</td></tr>
 <tr class="separator:aab976c66724f0d8ddad8df2cec503ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a931bf85d5de7859263177b657ac57d75"><td class="memItemLeft" align="right" valign="top"><a id="a931bf85d5de7859263177b657ac57d75"></a>
-<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow_copy</b> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *dest, const <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *src)</td></tr>
-<tr class="separator:a931bf85d5de7859263177b657ac57d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75782416cc89c49c85beb3ec6b3bcf3e"><td class="memItemLeft" align="right" valign="top"><a id="a75782416cc89c49c85beb3ec6b3bcf3e"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow_fid</b> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *kdr)</td></tr>
 <tr class="separator:a75782416cc89c49c85beb3ec6b3bcf3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,73 +139,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_destroy<
 <tr class="memitem:a7758b29531d8bb9b41dcca20dd8cc040"><td class="memItemLeft" align="right" valign="top"><a id="a7758b29531d8bb9b41dcca20dd8cc040"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_delete</b> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd)</td></tr>
 <tr class="separator:a7758b29531d8bb9b41dcca20dd8cc040"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfc4e4837973cfae263ef61d2b06f67a"><td class="memItemLeft" align="right" valign="top"><a id="abfc4e4837973cfae263ef61d2b06f67a"></a>
-<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__keydir_8c.html#abfc4e4837973cfae263ef61d2b06f67a">keydir_chain_insert</a> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *entry, <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *elem)</td></tr>
-<tr class="memdesc:abfc4e4837973cfae263ef61d2b06f67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">walk the chain of elements until the next pointer is null, then insert our new element there <br /></td></tr>
-<tr class="separator:abfc4e4837973cfae263ef61d2b06f67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7f9f461afa12ec1f75f30534f5e5a8f"><td class="memItemLeft" align="right" valign="top"><a id="ac7f9f461afa12ec1f75f30534f5e5a8f"></a>
 <a class="el" href="structccask__keydir.html">ccask_keydir</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_insert</b> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd, <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *elem)</td></tr>
 <tr class="separator:ac7f9f461afa12ec1f75f30534f5e5a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac91ffb08ca5e883e85b79c402ac6bee7"><td class="memItemLeft" align="right" valign="top"><a id="ac91ffb08ca5e883e85b79c402ac6bee7"></a>
-<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>keydir_chain_get</b> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *entry, uint32_t key_size, uint8_t *key)</td></tr>
-<tr class="separator:ac91ffb08ca5e883e85b79c402ac6bee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affd524fd0b02e7cdb80382ffc650323d"><td class="memItemLeft" align="right" valign="top"><a id="affd524fd0b02e7cdb80382ffc650323d"></a>
 <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_get</b> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd, uint32_t key_size, uint8_t *key)</td></tr>
 <tr class="separator:affd524fd0b02e7cdb80382ffc650323d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a146d42ef6feb7af84a8ea78f0ccdc564"><td class="memItemLeft" align="right" valign="top"><a id="a146d42ef6feb7af84a8ea78f0ccdc564"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>KDROW_SIZE</b> = sizeof(<a class="el" href="structccask__kdrow.html">ccask_kdrow</a>)</td></tr>
-<tr class="separator:a146d42ef6feb7af84a8ea78f0ccdc564"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="structccask__keydir.html">ccask_keydir</a> implements the keydir and kdrow structs and methods </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a5dabc32c24ea4490d3946ef14dca3e74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5dabc32c24ea4490d3946ef14dca3e74">&#9670;&nbsp;</a></span>hash()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t hash </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>key_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t *&#160;</td>
-          <td class="paramname"><em>key</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>table_size</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>FNV-1a hash of the key <em>key</em> of length <em>key_size</em>. </p>
-<p><a href="https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function">FNV-1a hash</a></p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>array of key_size bytes </td></tr>
-    <tr><td class="paramname">key_size</td><td>size of the key in bytes </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
