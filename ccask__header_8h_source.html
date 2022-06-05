@@ -23,7 +23,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CCask
    </div>
-   <div id="projectbrief">ACimplementationoftheBitcaskprotocol</div>
+   <div id="projectbrief">C implementation of Bitcask</div>
   </td>
  </tr>
  </tbody>
@@ -93,17 +93,21 @@ $(function() {
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<a class="code" href="structccask__header.html">ccask_header</a>* ccask_header_deserialize(<a class="code" href="structccask__header.html">ccask_header</a>* dest, uint8_t* data);</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">// accessors</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;time_t ccask_header_timestamp(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;uint32_t ccask_header_crc(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;uint32_t ccask_header_ksz(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;uint32_t ccask_header_vsz(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;time_t <a class="code" href="ccask__header_8c.html#a15cb005872d099cd43d5abe195534e84">ccask_header_timestamp</a>(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;uint32_t <a class="code" href="ccask__header_8c.html#a7bf98ed12e4c8e12007a0dcb008a44f3">ccask_header_crc</a>(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;uint32_t <a class="code" href="ccask__header_8c.html#a2afd265fd128c564c4d36307b0d02ea5">ccask_header_ksz</a>(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;uint32_t <a class="code" href="ccask__header_8c.html#a9ea8abe6e17d934a53fdcf2282e49769">ccask_header_vsz</a>(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">// print/debug</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">void</span> ccask_header_print(<span class="keyword">const</span> <a class="code" href="structccask__header.html">ccask_header</a>* src);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructccask__header_html"><div class="ttname"><a href="structccask__header.html">ccask_header</a></div><div class="ttdef"><b>Definition:</b> ccask_header.c:8</div></div>
+<div class="ttc" id="accask__header_8c_html_a2afd265fd128c564c4d36307b0d02ea5"><div class="ttname"><a href="ccask__header_8c.html#a2afd265fd128c564c4d36307b0d02ea5">ccask_header_ksz</a></div><div class="ttdeci">uint32_t ccask_header_ksz(const ccask_header *src)</div><div class="ttdoc">return the key_size of the ccask_header src if it is initialized</div><div class="ttdef"><b>Definition:</b> ccask_header.c:121</div></div>
+<div class="ttc" id="accask__header_8c_html_a7bf98ed12e4c8e12007a0dcb008a44f3"><div class="ttname"><a href="ccask__header_8c.html#a7bf98ed12e4c8e12007a0dcb008a44f3">ccask_header_crc</a></div><div class="ttdeci">uint32_t ccask_header_crc(const ccask_header *src)</div><div class="ttdoc">return the crc of the ccask_header src if it is initialized</div><div class="ttdef"><b>Definition:</b> ccask_header.c:114</div></div>
+<div class="ttc" id="accask__header_8c_html_a15cb005872d099cd43d5abe195534e84"><div class="ttname"><a href="ccask__header_8c.html#a15cb005872d099cd43d5abe195534e84">ccask_header_timestamp</a></div><div class="ttdeci">time_t ccask_header_timestamp(const ccask_header *src)</div><div class="ttdoc">return the timestamp of the ccask_header src if it is initialized</div><div class="ttdef"><b>Definition:</b> ccask_header.c:107</div></div>
+<div class="ttc" id="accask__header_8c_html_a9ea8abe6e17d934a53fdcf2282e49769"><div class="ttname"><a href="ccask__header_8c.html#a9ea8abe6e17d934a53fdcf2282e49769">ccask_header_vsz</a></div><div class="ttdeci">uint32_t ccask_header_vsz(const ccask_header *src)</div><div class="ttdoc">return the value_size of the ccask_header src if it is initialized</div><div class="ttdef"><b>Definition:</b> ccask_header.c:128</div></div>
+<div class="ttc" id="astructccask__header_html"><div class="ttname"><a href="structccask__header.html">ccask_header</a></div><div class="ttdef"><b>Definition:</b> ccask_header.c:13</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

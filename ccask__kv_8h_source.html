@@ -23,7 +23,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CCask
    </div>
-   <div id="projectbrief">ACimplementationoftheBitcaskprotocol</div>
+   <div id="projectbrief">C implementation of Bitcask</div>
   </td>
  </tr>
  </tbody>
@@ -79,27 +79,35 @@ $(function() {
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structccask__kv.html">ccask_kv</a> <a class="code" href="structccask__kv.html">ccask_kv</a>;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// initializers / destructors</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<a class="code" href="structccask__kv.html">ccask_kv</a>* ccask_kv_init(<a class="code" href="structccask__kv.html">ccask_kv</a>* kv, uint32_t key_size, uint32_t value_size, <span class="keyword">const</span> uint8_t* key, <span class="keyword">const</span> uint8_t* value);</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<a class="code" href="structccask__kv.html">ccask_kv</a>* <a class="code" href="ccask__kv_8c.html#ab5239baf132c2da25a7df25dcacf2682">ccask_kv_init</a>(<a class="code" href="structccask__kv.html">ccask_kv</a>* kv, uint32_t key_size, uint32_t value_size, <span class="keyword">const</span> uint8_t* key, <span class="keyword">const</span> uint8_t* value);</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<a class="code" href="structccask__kv.html">ccask_kv</a>* ccask_kv_new(uint32_t key_size, uint32_t value_size, <span class="keyword">const</span> uint8_t* key, <span class="keyword">const</span> uint8_t* value);</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> ccask_kv_destroy(<a class="code" href="structccask__kv.html">ccask_kv</a>* kv);</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">void</span> ccask_kv_delete(<a class="code" href="structccask__kv.html">ccask_kv</a>* kv);</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">// serialize/deserialize</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;uint8_t* ccask_kv_serialize(uint8_t* dest, <span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<a class="code" href="structccask__kv.html">ccask_kv</a>* ccask_kv_deserialize(uint32_t key_size, uint32_t value_size, <a class="code" href="structccask__kv.html">ccask_kv</a>* dest, uint8_t* src);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;uint8_t* <a class="code" href="ccask__kv_8c.html#a658e28070163432ec443aa4e93a698c9">ccask_kv_serialize</a>(uint8_t* dest, <span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<a class="code" href="structccask__kv.html">ccask_kv</a>* <a class="code" href="ccask__kv_8c.html#a66cc75f7307a5a80c07cc6f02214fc6b">ccask_kv_deserialize</a>(uint32_t key_size, uint32_t value_size, <a class="code" href="structccask__kv.html">ccask_kv</a>* dest, uint8_t* src);</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// accessors</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;uint8_t* ccask_kv_value(uint8_t* dest, <span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;uint8_t* ccask_kv_key(uint8_t* dest, <span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;uint32_t ccask_kv_ksz(<span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;uint32_t ccask_kv_vsz(<span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;uint8_t* <a class="code" href="ccask__kv_8c.html#a5a5686fd11204f9e0c473cd4d3469b42">ccask_kv_value</a>(uint8_t* dest, <span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;uint8_t* <a class="code" href="ccask__kv_8c.html#a9a1529bc581e2123dc1ad97348b10e91">ccask_kv_key</a>(uint8_t* dest, <span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;uint32_t <a class="code" href="ccask__kv_8c.html#a88fe6bf8c4494af31414021e0a374c0f">ccask_kv_ksz</a>(<span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;uint32_t <a class="code" href="ccask__kv_8c.html#a03eadc6d8ddc13614ab692fa178121a1">ccask_kv_vsz</a>(<span class="keyword">const</span> <a class="code" href="structccask__kv.html">ccask_kv</a>* src);</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">// print/debug</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">void</span> ccask_kv_print(<a class="code" href="structccask__kv.html">ccask_kv</a>* kv);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">void</span> <a class="code" href="ccask__kv_8c.html#a4025380c78b1144aa79db57f660fd042">ccask_kv_print</a>(<a class="code" href="structccask__kv.html">ccask_kv</a>* kv);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructccask__kv_html"><div class="ttname"><a href="structccask__kv.html">ccask_kv</a></div><div class="ttdef"><b>Definition:</b> ccask_kv.c:7</div></div>
+<div class="ttc" id="accask__kv_8c_html_a66cc75f7307a5a80c07cc6f02214fc6b"><div class="ttname"><a href="ccask__kv_8c.html#a66cc75f7307a5a80c07cc6f02214fc6b">ccask_kv_deserialize</a></div><div class="ttdeci">ccask_kv * ccask_kv_deserialize(uint32_t key_size, uint32_t value_size, ccask_kv *dest, uint8_t *src)</div><div class="ttdoc">deserializes a byte array into a ccask_kv object</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:97</div></div>
+<div class="ttc" id="astructccask__kv_html"><div class="ttname"><a href="structccask__kv.html">ccask_kv</a></div><div class="ttdef"><b>Definition:</b> ccask_kv.c:12</div></div>
+<div class="ttc" id="accask__kv_8c_html_a658e28070163432ec443aa4e93a698c9"><div class="ttname"><a href="ccask__kv_8c.html#a658e28070163432ec443aa4e93a698c9">ccask_kv_serialize</a></div><div class="ttdeci">uint8_t * ccask_kv_serialize(uint8_t *dest, const ccask_kv *src)</div><div class="ttdoc">serializes a ccask_kv object into a byte array</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:79</div></div>
+<div class="ttc" id="accask__kv_8c_html_a4025380c78b1144aa79db57f660fd042"><div class="ttname"><a href="ccask__kv_8c.html#a4025380c78b1144aa79db57f660fd042">ccask_kv_print</a></div><div class="ttdeci">void ccask_kv_print(ccask_kv *kv)</div><div class="ttdoc">pretty-print the ccask_kv kv</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:149</div></div>
+<div class="ttc" id="accask__kv_8c_html_a88fe6bf8c4494af31414021e0a374c0f"><div class="ttname"><a href="ccask__kv_8c.html#a88fe6bf8c4494af31414021e0a374c0f">ccask_kv_ksz</a></div><div class="ttdeci">uint32_t ccask_kv_ksz(const ccask_kv *src)</div><div class="ttdoc">return the key size from a ccask_kv</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:135</div></div>
+<div class="ttc" id="accask__kv_8c_html_ab5239baf132c2da25a7df25dcacf2682"><div class="ttname"><a href="ccask__kv_8c.html#ab5239baf132c2da25a7df25dcacf2682">ccask_kv_init</a></div><div class="ttdeci">ccask_kv * ccask_kv_init(ccask_kv *kv, uint32_t key_size, uint32_t value_size, const uint8_t *key, const uint8_t *value)</div><div class="ttdoc">Initialize a ccask key-value object.</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:30</div></div>
+<div class="ttc" id="accask__kv_8c_html_a9a1529bc581e2123dc1ad97348b10e91"><div class="ttname"><a href="ccask__kv_8c.html#a9a1529bc581e2123dc1ad97348b10e91">ccask_kv_key</a></div><div class="ttdeci">uint8_t * ccask_kv_key(uint8_t *dest, const ccask_kv *src)</div><div class="ttdoc">copy the key from a ccask_kv to an appopriately sized, already-allocated buffer dest</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:117</div></div>
+<div class="ttc" id="accask__kv_8c_html_a5a5686fd11204f9e0c473cd4d3469b42"><div class="ttname"><a href="ccask__kv_8c.html#a5a5686fd11204f9e0c473cd4d3469b42">ccask_kv_value</a></div><div class="ttdeci">uint8_t * ccask_kv_value(uint8_t *dest, const ccask_kv *src)</div><div class="ttdoc">copy the value from a ccask_kv to an appropriately size, already-allocated buffer dest</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:126</div></div>
+<div class="ttc" id="accask__kv_8c_html_a03eadc6d8ddc13614ab692fa178121a1"><div class="ttname"><a href="ccask__kv_8c.html#a03eadc6d8ddc13614ab692fa178121a1">ccask_kv_vsz</a></div><div class="ttdeci">uint32_t ccask_kv_vsz(const ccask_kv *src)</div><div class="ttdoc">return the value size from a ccask_kv</div><div class="ttdef"><b>Definition:</b> ccask_kv.c:142</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
