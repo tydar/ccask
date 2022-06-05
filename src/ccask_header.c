@@ -5,6 +5,11 @@
 #include <inttypes.h>
 #include <time.h>
 
+/**@file
+ * @brief ccask_header.c implements the ccask_header struct representing a persisted
+ * db entry header including crc, timestamp, key size, and value size
+ */
+
 struct ccask_header {
     time_t timestamp;
     uint32_t crc;

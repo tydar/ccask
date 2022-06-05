@@ -16,6 +16,10 @@
 
 #include "ccask_keydir.h"
 
+/**@file
+ * @brief ccask_keydir implements the keydir and kdrow structs and methods
+ */
+
 /*-----------struct defs---------------------*/
 struct ccask_kdrow {
     uint32_t key_size;

@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include "crc.h"
 
+/**@file
+ * @brief crc.c implements the CRC32 cyclic redundancy check
+ */
+
 uint32_t CRC_TABLE[256];
 
 /**@brief crc_init sets up the lookup table for the CRC computation

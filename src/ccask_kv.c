@@ -4,6 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 
+/**@file
+ * @brief ccask_kv implements the ccask_kv struct and methods representing a persisted/persistable
+ * 		  key-value record for the database
+ */
+
 struct ccask_kv {
     uint32_t key_size;
     uint32_t value_size;

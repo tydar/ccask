@@ -11,6 +11,9 @@
 #include <string.h>
 #include <errno.h>
 
+/**@file
+ * @brief ccask_db.c implements useful DB operations (get, set, populate from file)
+ */
 
 // TODO: make KEYDIR_SIZE configurable or at least think harder about a sensible value
 #define KEYDIR_SIZE 1024
