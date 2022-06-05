@@ -50,6 +50,7 @@ void test_kdrow(void) {
 	puts("kdr1 still holds values after kdr2 delete");
 	assert(ccask_kdrow_fid(kdr1) == fid);
 
+	ccask_kdrow_delete(kdr1);
 
 	puts("\t===== completed ccask_kdrow tests =====");
 }
@@ -103,6 +104,10 @@ void test_keydir(void) {
 	res = ccask_keydir_get(kd, 5, key);
 	assert(ccask_kdrow_vpos(res) == vpos1);
 
+	ccask_keydir_delete(kd);
+	ccask_kdrow_delete(kdr);
+	ccask_kdrow_delete(kdr2);
+	ccask_kdrow_delete(kdr3);
 	puts("\t===== completed ccask_keydir tests =====");
 }
 
