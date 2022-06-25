@@ -10,6 +10,7 @@
 #include "ccask_kv.h"
 #include "ccask_keydir.h"
 #include "ccask_db.h"
+#include "util.h"
 
 void test_kdrow(void) {
 	puts("\t===== starting ccask_kdrow tests =====");
@@ -115,8 +116,36 @@ void test_db(void) {
 	return;
 }
 
+void test_server(void) {
+	return;
+}
+
+void test_util(void) {
+	puts("\t===== test util fn =====");
+
+	// gotta test my bytewise conversion macros
+	// since I am rusty on my endianness math...
+	printf("uint8_t[] -> uint32_t macros......");
+	fflush(stdin);
+	uint8_t be255[4] = { 0, 0, 0, 0xFF };
+	uint8_t be8192[4] = { 0, 0, 0x20, 0 };
+	uint8_t le255[4] = { 0xFF, 0, 0, 0 };
+	uint8_t le8192[4] = { 0, 0x20, 0, 0 };
+
+	assert(NWK_BYTE_ARR_U32(be255) == 255);
+	assert(NWK_BYTE_ARR_U32(be8192) == 8192);
+
+	assert(HST_BYTE_ARR_U32(le255) == 255);
+	assert(HST_BYTE_ARR_U32(le8192) == 8192);
+	puts("worked!");
+
+	puts("\t===== done =====");
+}
+
 int main(void) {
 	test_kdrow();
 	puts("\n\n");
 	test_keydir();
+	puts("\n\n");
+	test_util();
 }
