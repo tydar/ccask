@@ -82,6 +82,7 @@ $(function() {
 <code>#include &quot;ccask_header.h&quot;</code><br />
 <code>#include &quot;ccask_kv.h&quot;</code><br />
 <code>#include &quot;crc.h&quot;</code><br />
+<code>#include &quot;util.h&quot;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
@@ -100,12 +101,20 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structccask__get__result.html">ccask_get_result</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structccask__result.html">ccask_result</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a92b58d4b979653a1d465e6baca332f08"><td class="memItemLeft" align="right" valign="top"><a id="a92b58d4b979653a1d465e6baca332f08"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>KEYDIR_SIZE</b>&#160;&#160;&#160;1024</td></tr>
 <tr class="separator:a92b58d4b979653a1d465e6baca332f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae227e0ae012e81252c364afa63019f39"><td class="memItemLeft" align="right" valign="top"><a id="ae227e0ae012e81252c364afa63019f39"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>GET_CMD</b>&#160;&#160;&#160;0</td></tr>
+<tr class="separator:ae227e0ae012e81252c364afa63019f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0269f32fb712f0ecc3a0b3639ff46253"><td class="memItemLeft" align="right" valign="top"><a id="a0269f32fb712f0ecc3a0b3639ff46253"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>SET_CMD</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:a0269f32fb712f0ecc3a0b3639ff46253"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -115,6 +124,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a8a747959faee5903a50b953828394732"><td class="memItemLeft" align="right" valign="top"><a id="a8a747959faee5903a50b953828394732"></a>
 <a class="el" href="structccask__get__result.html">ccask_get_result</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_gr_new</b> (uint32_t value_size, uint8_t *value, bool crc_passed)</td></tr>
 <tr class="separator:a8a747959faee5903a50b953828394732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5358bea2206fc7bdc1eeedde1cb0a01"><td class="memItemLeft" align="right" valign="top"><a id="af5358bea2206fc7bdc1eeedde1cb0a01"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#af5358bea2206fc7bdc1eeedde1cb0a01">ccask_gr_vsz</a> (const <a class="el" href="structccask__get__result.html">ccask_get_result</a> *gr)</td></tr>
+<tr class="memdesc:af5358bea2206fc7bdc1eeedde1cb0a01"><td class="mdescLeft">&#160;</td><td class="mdescRight">getter for <a class="el" href="structccask__get__result.html">ccask_get_result</a> value size <br /></td></tr>
+<tr class="separator:af5358bea2206fc7bdc1eeedde1cb0a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a660dd0118cfab98800e335ddffad5afa"><td class="memItemLeft" align="right" valign="top"><a id="a660dd0118cfab98800e335ddffad5afa"></a>
+uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#a660dd0118cfab98800e335ddffad5afa">ccask_gr_val</a> (uint8_t *dest, const <a class="el" href="structccask__get__result.html">ccask_get_result</a> *src)</td></tr>
+<tr class="memdesc:a660dd0118cfab98800e335ddffad5afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a non-null ccask_get_result* and a uint8_t* dest allocated to the appropriate size, return a copy of the value in dest <br /></td></tr>
+<tr class="separator:a660dd0118cfab98800e335ddffad5afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ad4c167200b8cd48f131c04ef3b5f0d"><td class="memItemLeft" align="right" valign="top"><a id="a5ad4c167200b8cd48f131c04ef3b5f0d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_gr_destroy</b> (<a class="el" href="structccask__get__result.html">ccask_get_result</a> *gr)</td></tr>
 <tr class="separator:a5ad4c167200b8cd48f131c04ef3b5f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,6 +179,25 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccas
 <tr class="memitem:ae6d9d81209a8c704a1f3f4982a7d5ce1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structccask__get__result.html">ccask_get_result</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#ae6d9d81209a8c704a1f3f4982a7d5ce1">ccask_db_get</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db, uint32_t key_size, uint8_t *key)</td></tr>
 <tr class="memdesc:ae6d9d81209a8c704a1f3f4982a7d5ce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">get implementation 1) try to get kdrow from keydir (ccask_keydir_get(...)) 2) from kdrow, we additionally get value_size, file_id, value_pos 3) now from our file pointer, we seek to value_pos.  <a href="ccask__db_8c.html#ae6d9d81209a8c704a1f3f4982a7d5ce1">More...</a><br /></td></tr>
 <tr class="separator:ae6d9d81209a8c704a1f3f4982a7d5ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3566b22b0a8280cc983d1b7f4ef8772c"><td class="memItemLeft" align="right" valign="top"><a id="a3566b22b0a8280cc983d1b7f4ef8772c"></a>
+<a class="el" href="structccask__result.html">ccask_result</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_res_init</b> (<a class="el" href="structccask__result.html">ccask_result</a> *res, uint8_t type)</td></tr>
+<tr class="separator:a3566b22b0a8280cc983d1b7f4ef8772c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de081ada7d69ece15939a266576b156"><td class="memItemLeft" align="right" valign="top"><a id="a7de081ada7d69ece15939a266576b156"></a>
+<a class="el" href="structccask__result.html">ccask_result</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_res_new</b> (uint8_t type)</td></tr>
+<tr class="separator:a7de081ada7d69ece15939a266576b156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc04cb3a403fa333d973ce14804346e4"><td class="memItemLeft" align="right" valign="top"><a id="afc04cb3a403fa333d973ce14804346e4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_res_destroy</b> (<a class="el" href="structccask__result.html">ccask_result</a> *res)</td></tr>
+<tr class="separator:afc04cb3a403fa333d973ce14804346e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2af3fa34399390ab5da056b92ae3a11"><td class="memItemLeft" align="right" valign="top"><a id="ab2af3fa34399390ab5da056b92ae3a11"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_res_delete</b> (<a class="el" href="structccask__result.html">ccask_result</a> *res)</td></tr>
+<tr class="separator:ab2af3fa34399390ab5da056b92ae3a11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f3e4c5478eec6fdaa5362c5f69e0b7e"><td class="memItemLeft" align="right" valign="top"><a id="a3f3e4c5478eec6fdaa5362c5f69e0b7e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_res_print</b> (<a class="el" href="structccask__result.html">ccask_result</a> *res)</td></tr>
+<tr class="separator:a3f3e4c5478eec6fdaa5362c5f69e0b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc55300814f07140a280924297114e16"><td class="memItemLeft" align="right" valign="top"><a id="adc55300814f07140a280924297114e16"></a>
+<a class="el" href="structccask__result.html">ccask_result</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#adc55300814f07140a280924297114e16">ccask_query_interp</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db, uint8_t *cmd)</td></tr>
+<tr class="memdesc:adc55300814f07140a280924297114e16"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a byte array representing a query return a <a class="el" href="structccask__result.html">ccask_result</a> representing the request or 0 if the request is invalid <br /></td></tr>
+<tr class="separator:adc55300814f07140a280924297114e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="ccask__db_8c.html" title="ccask_db.c implements useful DB operations (get, set, populate from file)">ccask_db.c</a> implements useful DB operations (get, set, populate from file) </p>
