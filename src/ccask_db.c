@@ -3,6 +3,7 @@
 #include "ccask_header.h"
 #include "ccask_kv.h"
 #include "crc.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -18,6 +19,10 @@
 // TODO: make KEYDIR_SIZE configurable or at least think harder about a sensible value
 #define KEYDIR_SIZE 1024
 
+// TODO: change commands to an enum
+#define GET_CMD 0
+#define SET_CMD 1
+
 // struct defs
 
 struct ccask_db {
@@ -32,6 +37,11 @@ struct ccask_get_result {
     uint32_t value_size;
     uint8_t* value;
     bool crc_passed;
+};
+
+struct ccask_result {
+	char type; // 0 == get 1 == set
+	ccask_get_result* gr; // null if type == 1. if type == 0 and gr == null => no result
 };
 
 //ccask_get_result functions
@@ -57,6 +67,20 @@ ccask_get_result* ccask_gr_new(uint32_t value_size, uint8_t* value, bool crc_pas
     ccask_get_result* gr = malloc(sizeof(ccask_get_result));
     gr = ccask_gr_init(gr, value_size, value, crc_passed);
     return gr;
+}
+
+/**@brief getter for ccask_get_result value size*/
+uint32_t ccask_gr_vsz(const ccask_get_result* gr) {
+	return gr->value_size;
+}
+
+/**@brief given a non-null ccask_get_result* and a uint8_t* dest allocated to the appropriate size, return a copy of the value in dest*/
+uint8_t* ccask_gr_val(uint8_t* dest, const ccask_get_result* src) {
+	if (!dest || !src) return 0;
+
+	memcpy(dest, src->value, src->value_size);
+
+	return dest;
 }
 
 void ccask_gr_destroy(ccask_get_result* gr) {
@@ -438,4 +462,97 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
     free(value);
 
     return gr;
+}
+
+/**************
+ *
+ * ccask_net_result functions
+ *
+ * handle interpretation of queries
+ *
+ **************/
+
+ccask_result* ccask_res_init(ccask_result* res, uint8_t type) {
+	if (res) {
+		// we always want to init res->gr to 0, since ccask_db_get will allocate memory for us
+		*res = (ccask_result) {
+			.type = type,
+			.gr = 0,
+		};
+	} else {
+		*res = (ccask_result){ 0 };
+	}
+
+	return res;
+}
+
+ccask_result* ccask_res_new(uint8_t type) {
+	ccask_result* res = malloc(sizeof(ccask_result));
+	return ccask_res_init(res, type);
+}
+
+void ccask_res_destroy(ccask_result* res) {
+	if (res->gr) ccask_gr_delete(res->gr);
+	*res = (ccask_result){ 0 };
+}
+
+void ccask_res_delete(ccask_result* res) {
+	ccask_res_destroy(res);
+	free(res);
+}
+
+void ccask_res_print(ccask_result* res) {
+	printf("Type: %s\n", res->type == 0 ? "GET" : "SET");
+	if (res->type == 0) {
+		ccask_gr_print(res->gr);
+	}
+}
+
+/**@brief given a byte array representing a query return a ccask_result representing the request or 0 if the request is invalid*/
+ccask_result* ccask_query_interp(ccask_db* db, uint8_t* cmd) {
+	if (!db || !cmd) return 0;
+	// extract the message size:
+	uint32_t msgsz = NWK_BYTE_ARR_U32(cmd);
+	size_t index = 4;
+
+	uint8_t cmd_byte = *(cmd+index);
+	index += 1;
+
+	uint32_t ksz = NWK_BYTE_ARR_U32((cmd+index));
+	index += 4;
+	uint32_t vsz = NWK_BYTE_ARR_U32((cmd+index));
+	index += 4;
+
+
+	uint8_t* key = 0;
+	if (ksz > 0) {
+		key = malloc(ksz);
+		memcpy(key, cmd+index, ksz);
+		index += ksz;
+	}
+
+	uint8_t* val = 0;
+	if (vsz > 0) {
+		val = malloc(vsz);
+		memcpy(val, cmd+index, vsz);
+		index += vsz;
+	}
+
+	ccask_result* res = ccask_res_new(cmd_byte);
+
+	switch(cmd_byte) {
+		case GET_CMD:
+			res->gr = ccask_db_get(db, ksz, key);
+			break;
+		case SET_CMD:
+			res->gr = 0;
+			db = ccask_db_set(db, ksz, key, vsz, val);
+			break;
+		default:
+			return 0;
+	}
+
+	free(key);
+	free(val);
+	return res;
 }
