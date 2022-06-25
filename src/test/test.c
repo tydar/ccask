@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <string.h>
 
 #define _TEST_
 
@@ -113,6 +114,44 @@ void test_keydir(void) {
 }
 
 void test_db(void) {
+	puts("\t===== ccask_db tests ======");
+
+	ccask_db* db = ccask_db_new("TEST_DB_FILE");
+	puts("Assert DB ptr not null after _new...");
+	assert(db != 0);
+
+	uint32_t ksz = 5;
+	uint8_t key[5] = { 1, 2, 3, 4, 5 };
+
+	uint32_t vsz = 5;
+	uint8_t val[5] = { 5, 4, 3, 2, 1 };
+	db = ccask_db_set(db, ksz, key, vsz, val);
+	puts("Assert DB not null after set....");
+	assert(db != 0);
+
+	ccask_get_result* gr = 0;
+	gr = ccask_db_get(db, ksz, key);
+	puts("Assert get result not null after good get....");
+	assert(gr != 0);
+
+	uint32_t gr_vsz = ccask_gr_vsz(gr);
+	puts("Assert get result vsz == vsz");
+	assert(gr_vsz == vsz);
+
+	uint8_t* gr_val = 0;
+	gr_val = malloc(gr_vsz);
+	gr_val = ccask_gr_val(gr_val, gr);
+	puts("Assert get result val == val");
+	assert(memcmp(val, gr_val, gr_vsz) == 0);
+
+	// size of our get command
+	// 18 bytes
+	uint32_t cmdsz = 4 + 1 + 4 + 4 + 5;
+	
+	ccask_db_delete(db);
+	ccask_gr_delete(gr);
+	free(gr_val);
+	puts("\t===== ccask_db tests complete =====");
 	return;
 }
 
@@ -144,8 +183,10 @@ void test_util(void) {
 
 int main(void) {
 	test_kdrow();
-	puts("\n\n");
+	puts("");
 	test_keydir();
-	puts("\n\n");
+	puts("");
 	test_util();
+	puts("");
+	test_db();
 }
