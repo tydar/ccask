@@ -147,10 +147,40 @@ void test_db(void) {
 	// size of our get command
 	// 18 bytes
 	uint32_t cmdsz = 4 + 1 + 4 + 4 + 5;
+	uint8_t* cmd = 0;
+	cmd = malloc(cmdsz);
+
+	size_t index = 0;
+	u32_to_nwk_byte_arr(cmd+index, cmdsz);
+	index += sizeof(cmdsz);
+	*(cmd+index) = 0; // GET command
+	index++;
+	u32_to_nwk_byte_arr(cmd+index, ksz);
+	index += sizeof(ksz);
+	u32_to_nwk_byte_arr(cmd+index, 0);
+	index += sizeof(uint32_t);
+	memcpy(cmd+index, key, ksz);
+
+	ccask_result* res = 0;
+	res = ccask_query_interp(db, cmd);
+	assert(ccask_res_type(res) == 0);
+	puts("query interp succeeds");
+
+	uint32_t res_vsz = ccask_res_vsz(res);
+	assert(res_vsz == vsz);
+	puts("query result accurate vsz");
+
+	uint8_t* res_val = 0;
+	res_val = malloc(res_vsz);
+	res_val = ccask_res_value(res_val, res);
+	assert(memcmp(val, res_val, vsz) == 0);
+	puts("query result accurate value");
 	
 	ccask_db_delete(db);
 	ccask_gr_delete(gr);
+	ccask_res_delete(res);
 	free(gr_val);
+	free(res_val);
 	puts("\t===== ccask_db tests complete =====");
 	return;
 }
