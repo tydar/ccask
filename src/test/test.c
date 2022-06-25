@@ -186,8 +186,13 @@ void test_util(void) {
 
 	narr = u32_to_nwk_byte_arr(narr, 25467);
 	rev = NWK_BYTE_ARR_U32(narr);
-	printf("%u\n", rev);
 	assert(rev == 25467);
+
+	narr = u32_to_host_byte_arr(narr, 255);
+	assert(HST_BYTE_ARR_U32(narr) == 255);
+
+	narr = u32_to_host_byte_arr(narr, 25467);
+	assert(HST_BYTE_ARR_U32(narr) == 25467);
 	puts("u32->byte array tests complete!");
 
 	puts("\t===== done =====");
