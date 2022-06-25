@@ -174,7 +174,68 @@ void test_db(void) {
 	res_val = malloc(res_vsz);
 	res_val = ccask_res_value(res_val, res);
 	assert(memcmp(val, res_val, vsz) == 0);
-	puts("query result accurate value");
+	puts("query get result accurate value");
+
+	cmdsz = 4 + 1 + 4 + 4 + 5 + 5; // add val size
+	index = 0;
+	free(cmd);
+	cmd = malloc(cmdsz);
+
+	uint8_t key2[5] = { 
+		0xFF, 0xFF, 0xFF, 0xFF, 0xFF 
+	};
+	uint8_t val2[5] = {
+		0xAA, 0xAA, 0xAA, 0xAA, 0xAA
+	};
+
+	u32_to_nwk_byte_arr(cmd+index, cmdsz);
+	index += sizeof(cmdsz);
+	*(cmd+index) = 1; // SET command
+	index++;
+	u32_to_nwk_byte_arr(cmd+index, ksz);
+	index += sizeof(ksz);
+	u32_to_nwk_byte_arr(cmd+index, vsz);
+	index += sizeof(vsz);
+	memcpy(cmd+index, key2, ksz);
+	index += ksz;
+	memcpy(cmd+index, val2, vsz);
+
+	ccask_res_delete(res);
+	res = 0;
+	res = ccask_query_interp(db, cmd);
+	assert(res != 0);
+	assert(ccask_res_type(res) == 1);
+	puts("query type set accurate");
+
+	cmdsz = 4 + 1 + 4 + 4 + 5;
+	index = 0;
+
+	u32_to_nwk_byte_arr(cmd+index, cmdsz);
+	index += sizeof(cmdsz);
+	*(cmd+index) = 0; // GET command
+	index++;
+	u32_to_nwk_byte_arr(cmd+index, ksz);
+	index += sizeof(ksz);
+	u32_to_nwk_byte_arr(cmd+index, 0);
+	index += sizeof(uint32_t);
+	memcpy(cmd+index, key2, ksz);
+
+	ccask_res_delete(res);
+	res = 0;
+	res = ccask_query_interp(db, cmd);
+	assert(ccask_res_type(res) == 0);
+	puts("query interp succeeds");
+
+	res_vsz = ccask_res_vsz(res);
+	assert(res_vsz == vsz);
+	puts("query result accurate vsz");
+
+	free(res_val);
+	res_val = 0;
+	res_val = malloc(res_vsz);
+	res_val = ccask_res_value(res_val, res);
+	assert(memcmp(val2, res_val, vsz) == 0);
+	puts("query get result accurate value");
 	
 	ccask_db_delete(db);
 	ccask_gr_delete(gr);
