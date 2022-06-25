@@ -38,6 +38,9 @@ void ccask_res_destroy(ccask_result* res);
 void ccask_res_delete(ccask_result* res);
 void ccask_res_print(ccask_result* res);
 
+uint8_t ccask_res_type(const ccask_result* res);
+uint8_t* ccask_res_value(uint8_t* dest, const ccask_result* res);
+uint32_t ccask_res_vsz(const ccask_result* res);
 ccask_result* ccask_query_interp(ccask_db* db, uint8_t* cmd);
 
 #endif

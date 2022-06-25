@@ -508,6 +508,23 @@ void ccask_res_print(ccask_result* res) {
 	}
 }
 
+uint8_t ccask_res_type(const ccask_result* res) {
+	if (res) return res->type;
+	return 255;
+}
+
+uint8_t* ccask_res_value(uint8_t* dest, const ccask_result* res){
+	if (!res || !res->gr) return 0;
+
+	return ccask_gr_val(dest, res->gr);
+}
+
+uint32_t ccask_res_vsz(const ccask_result* res) {
+	if (!res || !res->gr) return UINT32_MAX;
+
+	return ccask_gr_vsz(res->gr);
+}
+
 /**@brief given a byte array representing a query return a ccask_result representing the request or 0 if the request is invalid*/
 ccask_result* ccask_query_interp(ccask_db* db, uint8_t* cmd) {
 	if (!db || !cmd) return 0;
