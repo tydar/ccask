@@ -178,6 +178,18 @@ void test_util(void) {
 	assert(HST_BYTE_ARR_U32(le8192) == 8192);
 	puts("worked!");
 
+	uint8_t* narr = malloc(sizeof(uint32_t));
+	narr = u32_to_nwk_byte_arr(narr, 255);
+	uint32_t rev = NWK_BYTE_ARR_U32(narr);
+	assert(rev == 255);
+
+
+	narr = u32_to_nwk_byte_arr(narr, 25467);
+	rev = NWK_BYTE_ARR_U32(narr);
+	printf("%u\n", rev);
+	assert(rev == 25467);
+	puts("u32->byte array tests complete!");
+
 	puts("\t===== done =====");
 }
 
