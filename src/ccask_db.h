@@ -30,6 +30,8 @@ uint8_t* ccask_gr_val(uint8_t* dest, const ccask_get_result* src);
 void ccask_gr_destroy(ccask_get_result* gr);
 void ccask_gr_delete(ccask_get_result* gr);
 void ccask_gr_print(ccask_get_result* gr);
+int ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen);
+int ccask_res_bytes(ccask_result* res, uint8_t* buf, size_t buflen);
 
 // query interp
 ccask_result* ccask_res_init(ccask_result* res, uint8_t type);

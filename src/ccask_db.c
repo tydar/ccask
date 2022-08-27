@@ -39,6 +39,7 @@ struct ccask_get_result {
     bool crc_passed;
 };
 
+// TODO: include request status flag so commands can report failure
 struct ccask_result {
 	char type; // 0 == get 1 == set
 	ccask_get_result* gr; // null if type == 1. if type == 0 and gr == null => no result
@@ -105,6 +106,39 @@ void ccask_gr_print(ccask_get_result* gr) {
     printf("} CRC?: %s\n", gr->crc_passed ? "true" : "false");
 }
 
+
+/* @brief ccask_gr_bytes puts a bytecode representation of a get request into buf
+ *
+ * @param[out] buf byte array of gr formatted as vsz|value|crc_passed
+ * */
+int ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen) {
+	if (!gr) return -1;
+
+	int reqsize = 1 + sizeof(gr->value_size) + gr->value_size;
+	if (reqsize > buflen) return -2;
+
+	memcpy(buf, &gr->value_size, sizeof(gr->value_size));
+	buf += sizeof(gr->value_size);
+	memcpy(buf, gr->value, gr->value_size);
+	buf += gr->value_size;
+	*buf = gr->crc_passed ? 0 : 1;
+
+	return reqsize;
+}
+
+int ccask_res_bytes(ccask_result* res, uint8_t* buf, size_t buflen) {
+	if (buflen == 0) return -1;
+	switch(res->type)  {
+		case 0:
+			*buf = GET_CMD;
+			return ccask_gr_bytes(res->gr, buf+1, buflen-1);
+		case 1:
+			*buf = SET_CMD;
+			return 1;
+		default:
+			return -1;
+	}
+}
 
 //ccask_db functions
 

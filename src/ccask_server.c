@@ -96,55 +96,6 @@ unsigned int get_listener_socket(char* port) {
 	return listener;
 }
 
-struct ccask_server {
-	int sd;	
-	unsigned int fd_count;
-	unsigned int fd_size;
-	struct pollfd *pfds;
-};
-
-ccask_server* ccask_server_init(ccask_server* srv, char* port) {
-	// 1) get our addr info using the passed port
-	// 2) bind our listening socket based on that
-	if (!port) port = "54569"; // a random default
-	if (srv && port) {
-		if((srv->sd = get_listener_socket(port)) == -1) {
-			*srv = (ccask_server){ 0 };
-			srv->sd = -1;
-			return srv;
-		};
-		srv->fd_count = 0;
-		srv->fd_size = 5;
-		srv->pfds = malloc(sizeof(*srv->pfds) * srv->fd_size);
-	} else {
-		*srv = (ccask_server){ 0 };
-		srv->sd = -1;
-	}
-	return srv;
-}
-
-ccask_server* ccask_server_new(char* path) {
-	ccask_server* srv = malloc(sizeof(ccask_server));
-	srv = ccask_server_init(srv, path);
-	return srv;
-}
-
-void ccask_server_destroy(ccask_server* srv) {
-	if (srv) {
-		free(srv->pfds);
-		*srv = (ccask_server){ 0 };
-	}
-}
-
-void ccask_server_delete(ccask_server* srv) {
-	ccask_server_destroy(srv);
-	free(srv);
-}
-
-void ccask_server_print(ccask_server* srv) {
-	printf("sd: %d\nfd_count: %d\nfd_size: %d\n", srv->sd, srv->fd_count, srv->fd_size);
-}
-
 /**@brief recv_until reads len bytes into buf or returns -1 or -2 to indicate an error*/
 int recv_until(int sockfd, uint8_t* buf, size_t len, int flags) {
 	if (!buf) return -1;
@@ -171,7 +122,7 @@ int recv_until(int sockfd, uint8_t* buf, size_t len, int flags) {
 }
 
 /**@brief recv_cmd receives a command of maximum size MAX_CMD_SIZE from the non-blocking socket sockfd. returns -1 on error or full command not received*/
-int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz, int flags) {
+int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz) {
 	if (!buf) return -1;
 	size_t len = 0;
 	size_t len_size = 4; // bytes the msg length header
@@ -179,6 +130,7 @@ int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz, int flags) {
 	int recvd = recv(sockfd, buf, len_size, 0);
 
 	if (recvd < len_size) {
+		fprintf(stderr, "fewer than 4 bytes received\n");
 		return -1;
 	}
 
@@ -187,57 +139,167 @@ int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz, int flags) {
 
 	if (len == 0 || len > MAX_CMD_SIZE || len > bufsz-recvd) return -1;
 
-	recvd = recv_until(sockfd, buf, len-recvd, 0);
+	recvd = recv_until(sockfd, buf, len-len_size, 0);
 
-	if (recvd < 0 || recvd < len-len_size) return -1;
+	if (recvd < 0 || recvd < len-len_size) { fprintf(stderr, "recvd only %d bytes of %lu\n", recvd, len-len_size); return -1; }
 	
 	return len;
 }
 
+// ----- end helpers -----
+
+struct ccask_server {
+	int sd;	
+	unsigned int fd_count;
+	unsigned int fd_size;
+	struct pollfd* pfds;
+	char* port;
+	ccask_db* db;
+};
+
+ccask_server* ccask_server_init(ccask_server* srv, char* port, ccask_db* db) {
+	// 1) get our addr info using the passed port
+	// 2) bind our listening socket based on that
+	if (!port) port = "54569"; // a random default
+	if (srv && port && db) {
+		if((srv->sd = get_listener_socket(port)) == -1) {
+			*srv = (ccask_server){ 0 };
+			srv->sd = -1;
+			return srv;
+		};
+		srv->fd_count = 0;
+		srv->fd_size = 5;
+		srv->pfds = malloc(sizeof(*srv->pfds) * srv->fd_size);
+		srv->db = db;
+		srv->port = port;
+	} else {
+		*srv = (ccask_server){ 0 };
+		srv->sd = -1;
+	}
+	return srv;
+}
+
+ccask_server* ccask_server_new(char* port, ccask_db* db) {
+	ccask_server* srv = malloc(sizeof(ccask_server));
+	srv = ccask_server_init(srv, port, db);
+	return srv;
+}
+
+void ccask_server_destroy(ccask_server* srv) {
+	if (srv) {
+		free(srv->pfds);
+		*srv = (ccask_server){ 0 };
+	}
+}
+
+void ccask_server_delete(ccask_server* srv) {
+	ccask_server_destroy(srv);
+	free(srv);
+}
+
+void ccask_server_print(ccask_server* srv) {
+	printf("sd: %d\nfd_count: %d\nfd_size: %d\n", srv->sd, srv->fd_count, srv->fd_size);
+}
+
+int add_to_pfds(ccask_server* srv, int newfd) {
+	if (srv->fd_count == srv->fd_size) {
+		srv->fd_size *= 2;
+
+		srv->pfds = realloc(srv->pfds, sizeof(*srv->pfds) * (srv->fd_size));
+		if (!srv->pfds) { perror("realloc"); return -1; }
+	}
+
+	srv->pfds[srv->fd_count].fd = newfd;
+	srv->pfds[srv->fd_count].events = POLLIN;
+
+	srv->fd_count++;
+
+	return 0;
+}
+
+void del_from_pfds(ccask_server* srv, int i) {
+	srv->pfds[i] = srv->pfds[srv->fd_count - 1];
+	srv->fd_count--;
+}
 
 // TODO: re-write ccask_server_run to use in-struct
 // 		 pfds. Then wire up to ccask query interface from ccask_db
 int ccask_server_run(ccask_server* srv) {
 	if( !srv ) return 1;
 
-	struct sockaddr_un remote;
-	socklen_t t;
-	int sd2, fd_count;
+	struct sockaddr_storage remote;
+	socklen_t addrlen;
+	int newfd;
+	char remoteIP[INET6_ADDRSTRLEN];
 
 	if (listen(srv->sd, MAX_CONN) == -1) {
 		perror("listen");
 		return 1;
 	}
 
-	struct pollfd pfds[MAX_CONN+1];
+	printf("ccask_server: listening on port %s\n", srv->port);
 
-	pfds[0].fd = srv->sd; // first polled socket is the listen socket
-	pfds[0].events = POLLIN;
+	srv->pfds[0].fd = srv->sd; // first polled socket is the listen socket
+	srv->pfds[0].events = POLLIN;
 
-	fd_count = 1;
+	srv->fd_count = 1;
 
 	for (;;) {
-		int poll_count = poll(pfds, fd_count, -1);
+		int poll_count = poll(srv->pfds, srv->fd_count, -1);
 
 		if (poll_count == -1) {
 			perror("poll");
 			return 0;
 		}
 
-		for (int i = 0; i < fd_count; i++) {
-			if (pfds[i].revents & POLLIN) {
-				if (pfds[i].fd == srv->sd) {
-					sd2 = accept(srv->sd, (struct sockaddr *)&remote, &t);
+		for (int i = 0; i < srv->fd_count; i++) {
+			if (srv->pfds[i].revents & POLLIN) {
+				if (srv->pfds[i].fd == srv->sd) {
+					addrlen = sizeof(remote);
+					newfd = accept(srv->sd, (struct sockaddr *)&remote, &addrlen);
 
-					if (sd2 == -1) {
+					if (newfd == -1) {
 						perror("accept");
 					} else {
-						// handle the new connection
-						// add it to our polling list
+						if(add_to_pfds(srv, newfd) < 0) return 1;
+
+						printf("ccask_server: new connection from %s on socket %d\n",
+								inet_ntop(remote.ss_family,
+									get_in_addr((struct sockaddr*)&remote),
+									remoteIP, INET6_ADDRSTRLEN),
+								newfd);
 					}
 				} else {
-					// handle reading from a client socket
-					// or send a message to a client socket
+					// TODO: send an error to the client when appropriate
+					int sender_fd = srv->pfds[i].fd;
+					uint8_t* buf = malloc(MAX_CMD_SIZE);
+					int rv = recv_cmd(sender_fd, buf, MAX_CMD_SIZE);
+					if (rv < 0 || buf == 0) { 
+						if (buf == 0) {
+							fprintf(stderr, "ccask_server: socket %d hung up\n", sender_fd);
+						}  else {
+							fprintf(stderr, "recv_cmd: %d\n", rv); 
+						}
+
+						close(srv->pfds[i].fd);
+						del_from_pfds(srv, i);
+						break;
+					}
+					ccask_result* res = ccask_query_interp(srv->db, buf);
+					if (res == 0) { fprintf(stderr, "ccask_server: query interp error from socket %d\n", sender_fd); break; }
+
+					//TODO: should we use a new buffer? should it be allocated to a different size?
+					rv = ccask_res_bytes(res, buf, MAX_CMD_SIZE);
+					if (rv < 0) { fprintf(stderr, "ccask_server: result render error on socket %d\n", sender_fd); break; }
+
+					puts("response: ");
+					for (size_t j = 0; j < rv; j++) {
+						printf("0x%.2x ", buf[j]);
+					}
+					puts("");
+					if (send(sender_fd, buf, rv, 0) == -1) {
+						perror("send");
+					}
 				}
 			}
 		}
