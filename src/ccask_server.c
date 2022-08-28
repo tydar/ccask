@@ -300,6 +300,8 @@ int ccask_server_run(ccask_server* srv) {
 					if (send(sender_fd, buf, rv, 0) == -1) {
 						perror("send");
 					}
+
+					if (res != 0) ccask_res_delete(res);
 				}
 			}
 		}

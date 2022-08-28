@@ -23,6 +23,15 @@
 #define GET_CMD 0
 #define SET_CMD 1
 
+// Response formats
+enum response_type { 
+	GET_SUCCESS,
+	GET_FAIL,
+	SET_SUCCESS,
+	SET_FAIL,
+	BAD_COMMAND
+};
+
 // struct defs
 
 struct ccask_db {
@@ -39,10 +48,9 @@ struct ccask_get_result {
     bool crc_passed;
 };
 
-// TODO: include request status flag so commands can report failure
 struct ccask_result {
-	char type; // 0 == get 1 == set
-	ccask_get_result* gr; // null if type == 1. if type == 0 and gr == null => no result
+	response_type type;
+	ccask_get_result* gr; // null if type != GET_SUCCESS
 };
 
 //ccask_get_result functions
@@ -109,34 +117,47 @@ void ccask_gr_print(ccask_get_result* gr) {
 
 /* @brief ccask_gr_bytes puts a bytecode representation of a get request into buf
  *
- * @param[out] buf byte array of gr formatted as vsz|value|crc_passed
+ * @param[out] buf byte array of gr formatted as msgsz|result_type|vsz|value
  * */
-int ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen) {
-	if (!gr) return -1;
+uint32_t ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen) {
+	if (gr == 0 || !gr->crc_passed) {
+		// handle the error case
+		char* errmsg = "No such key found or internal error";
+		if (gr != 0 && !gr->crc_passed) errmsg = "CRC failed";
+		uint32_t len = strlen(errmsg);
+		uint32_t ressz = sizeof(uint32_t) + 1 + sizeof(uint32_t) + (sizeof(*errmsg) * len);
 
-	int reqsize = 1 + sizeof(gr->value_size) + gr->value_size;
-	if (reqsize > buflen) return -2;
+		if (ressz > buflen) return UINT32_MAX;
 
-	memcpy(buf, &gr->value_size, sizeof(gr->value_size));
-	buf += sizeof(gr->value_size);
-	memcpy(buf, gr->value, gr->value_size);
-	buf += gr->value_size;
-	*buf = gr->crc_passed ? 0 : 1;
+		memcpy(buf, &ressz, sizeof(ressz));
+		buf += sizeof(ressz);
 
-	return reqsize;
-}
+		*buf = GET_FAIL;
+		buf++;
 
-int ccask_res_bytes(ccask_result* res, uint8_t* buf, size_t buflen) {
-	if (buflen == 0) return -1;
-	switch(res->type)  {
-		case 0:
-			*buf = GET_CMD;
-			return ccask_gr_bytes(res->gr, buf+1, buflen-1);
-		case 1:
-			*buf = SET_CMD;
-			return 1;
-		default:
-			return -1;
+		memcpy(buf, &len, sizeof(len));
+		buf += sizeof(len);
+
+		memcpy(buf, errmsg, len);
+
+		return ressz;
+	} else {
+		uint32_t ressz = sizeof(uint32_t) + 1 + sizeof(gr->value_size) + gr->value_size;
+		if (ressz > buflen) return UINT32_MAX;
+
+		memcpy(buf, &ressz, sizeof(ressz));
+		buf += sizeof(ressz);
+
+		*buf = GET_SUCCESS;
+		buf++;
+
+		memcpy(buf, &gr->value_size, sizeof(gr->value_size));
+		buf += sizeof(gr->value_size);
+
+		memcpy(buf, gr->value, gr->value_size);
+		buf += gr->value_size;
+
+		return ressz;
 	}
 }
 
@@ -506,7 +527,7 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
  *
  **************/
 
-ccask_result* ccask_res_init(ccask_result* res, uint8_t type) {
+ccask_result* ccask_res_init(ccask_result* res, response_type type) {
 	if (res) {
 		// we always want to init res->gr to 0, since ccask_db_get will allocate memory for us
 		*res = (ccask_result) {
@@ -520,7 +541,7 @@ ccask_result* ccask_res_init(ccask_result* res, uint8_t type) {
 	return res;
 }
 
-ccask_result* ccask_res_new(uint8_t type) {
+ccask_result* ccask_res_new(response_type type) {
 	ccask_result* res = malloc(sizeof(ccask_result));
 	return ccask_res_init(res, type);
 }
@@ -559,6 +580,62 @@ uint32_t ccask_res_vsz(const ccask_result* res) {
 	return ccask_gr_vsz(res->gr);
 }
 
+uint32_t ccask_sr_bytes(response_type rt, uint8_t* buf, size_t buflen) {
+	if (rt == SET_SUCCESS) {
+		char* msg = "SET succeeded";
+		uint32_t len = strlen(msg);
+		uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
+		if (buflen < msgsz) return UINT32_MAX;
+
+		memcpy(buf, &msgsz, sizeof(uint32_t));
+		buf += sizeof(uint32_t);
+
+		*buf = SET_SUCCESS;
+		buf++;
+
+		memcpy(buf, &len, sizeof(uint32_t));
+		buf += sizeof(uint32_t);
+
+		memcpy(buf, msg, len);
+		return msgsz;
+	} else if (rt == SET_FAIL) {
+		char* msg = "SET failed";
+		uint32_t len = strlen(msg);
+		uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
+		if (buflen < msgsz) return UINT32_MAX;
+
+		memcpy(buf, &msgsz, sizeof(uint32_t));
+		buf += sizeof(uint32_t);
+
+		*buf = SET_FAIL;
+		buf++;
+
+		memcpy(buf, &len, sizeof(uint32_t));
+		buf += sizeof(uint32_t);
+
+		memcpy(buf, msg, len);
+		return msgsz;
+	}
+
+	return UINT32_MAX;
+}
+
+uint32_t ccask_res_bytes(ccask_result* res, uint8_t* buf, size_t buflen) {
+	if (buflen == 0 || !buf) return UINT32_MAX;
+
+	switch(res->type)  {
+		case GET_SUCCESS:
+		case GET_FAIL:
+			return ccask_gr_bytes(res->gr, buf+1, buflen-1);
+		case SET_SUCCESS:
+		case SET_FAIL:
+			return ccask_sr_bytes(res->type, buf, buflen);
+		case BAD_COMMAND:
+		default:
+			return UINT32_MAX;
+	}
+}
+
 /**@brief given a byte array representing a query return a ccask_result representing the request or 0 if the request is invalid*/
 ccask_result* ccask_query_interp(ccask_db* db, uint8_t* cmd) {
 	if (!db || !cmd) return 0;
@@ -589,19 +666,24 @@ ccask_result* ccask_query_interp(ccask_db* db, uint8_t* cmd) {
 		index += vsz;
 	}
 
-	ccask_result* res = ccask_res_new(cmd_byte);
 
+	ccask_get_result* gr = 0;
+	response_type rt = BAD_COMMAND;
 	switch(cmd_byte) {
 		case GET_CMD:
-			res->gr = ccask_db_get(db, ksz, key);
+			gr = ccask_db_get(db, ksz, key);
+			rt = gr == 0 ? GET_FAIL : GET_SUCCESS;
 			break;
 		case SET_CMD:
-			res->gr = 0;
 			db = ccask_db_set(db, ksz, key, vsz, val);
+			rt = db == 0 ? SET_FAIL : SET_SUCCESS;
 			break;
 		default:
-			return 0;
+			break;
 	}
+
+	ccask_result* res = ccask_res_new(rt);
+	res->gr = gr;
 
 	free(key);
 	free(val);
