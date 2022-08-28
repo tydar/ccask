@@ -6,8 +6,8 @@
 #include <time.h>
 
 typedef struct ccask_header ccask_header;
-size_t HEADER_SIZE;
-size_t HEADER_BYTES;
+extern size_t HEADER_SIZE;
+extern size_t HEADER_BYTES;
 
 
 // initializers / destructors
