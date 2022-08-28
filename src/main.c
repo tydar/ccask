@@ -1,10 +1,11 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "crc.h"
-#include "ccask_header.h"
 #include "ccask_kv.h"
 #include "ccask_keydir.h"
 #include "ccask_db.h"
+#include "ccask_server.h"
 
 int main(void) {
     crc_init();
@@ -30,20 +31,22 @@ int main(void) {
     ccask_gr_print(res);
     ccask_gr_delete(res);
 
-	uint8_t key3[5] = { 0, 1, 2, 3, 4 };
-	uint8_t value3[12] = {
-		[3] = 0xFE,
-		[7] = 0xEF,
-		[9] = 0xDB,
-	};
+    uint8_t key3[5] = { 0, 1, 2, 3, 4 };
+    uint8_t value3[12] = {
+        [3] = 0xFE,
+        [7] = 0xEF,
+        [9] = 0xDB,
+    };
 
-	db = ccask_db_set(db, 5, key3, 12, value3);
-	
-	res = ccask_db_get(db, 5, key3);
+    db = ccask_db_set(db, 5, key3, 12, value3);
+
+    res = ccask_db_get(db, 5, key3);
     ccask_gr_print(res);
-	ccask_gr_delete(res);
+    ccask_gr_delete(res);
+
+    ccask_server* srv = ccask_server_new("29456", db);
+    ccask_server_run(srv);
 
     ccask_db_delete(db);
-
     return EXIT_SUCCESS;
 }
