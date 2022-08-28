@@ -24,12 +24,12 @@
 #define SET_CMD 1
 
 // Response formats
-enum response_type { 
-	GET_SUCCESS,
-	GET_FAIL,
-	SET_SUCCESS,
-	SET_FAIL,
-	BAD_COMMAND
+enum response_type {
+    GET_SUCCESS,
+    GET_FAIL,
+    SET_SUCCESS,
+    SET_FAIL,
+    BAD_COMMAND
 };
 
 // struct defs
@@ -49,8 +49,8 @@ struct ccask_get_result {
 };
 
 struct ccask_result {
-	response_type type;
-	ccask_get_result* gr; // null if type != GET_SUCCESS
+    response_type type;
+    ccask_get_result* gr; // null if type != GET_SUCCESS
 };
 
 //ccask_get_result functions
@@ -80,16 +80,16 @@ ccask_get_result* ccask_gr_new(uint32_t value_size, uint8_t* value, bool crc_pas
 
 /**@brief getter for ccask_get_result value size*/
 uint32_t ccask_gr_vsz(const ccask_get_result* gr) {
-	return gr->value_size;
+    return gr->value_size;
 }
 
 /**@brief given a non-null ccask_get_result* and a uint8_t* dest allocated to the appropriate size, return a copy of the value in dest*/
 uint8_t* ccask_gr_val(uint8_t* dest, const ccask_get_result* src) {
-	if (!dest || !src) return 0;
+    if (!dest || !src) return 0;
 
-	memcpy(dest, src->value, src->value_size);
+    memcpy(dest, src->value, src->value_size);
 
-	return dest;
+    return dest;
 }
 
 void ccask_gr_destroy(ccask_get_result* gr) {
@@ -120,45 +120,45 @@ void ccask_gr_print(ccask_get_result* gr) {
  * @param[out] buf byte array of gr formatted as msgsz|result_type|vsz|value
  * */
 uint32_t ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen) {
-	if (gr == 0 || !gr->crc_passed) {
-		// handle the error case
-		char* errmsg = "No such key found or internal error";
-		if (gr != 0 && !gr->crc_passed) errmsg = "CRC failed";
-		uint32_t len = strlen(errmsg);
-		uint32_t ressz = sizeof(uint32_t) + 1 + sizeof(uint32_t) + (sizeof(*errmsg) * len);
+    if (gr == 0 || !gr->crc_passed) {
+        // handle the error case
+        char* errmsg = "No such key found or internal error";
+        if (gr != 0 && !gr->crc_passed) errmsg = "CRC failed";
+        uint32_t len = strlen(errmsg);
+        uint32_t ressz = sizeof(uint32_t) + 1 + sizeof(uint32_t) + (sizeof(*errmsg) * len);
 
-		if (ressz > buflen) return UINT32_MAX;
+        if (ressz > buflen) return UINT32_MAX;
 
-		memcpy(buf, &ressz, sizeof(ressz));
-		buf += sizeof(ressz);
+        memcpy(buf, &ressz, sizeof(ressz));
+        buf += sizeof(ressz);
 
-		*buf = GET_FAIL;
-		buf++;
+        *buf = GET_FAIL;
+        buf++;
 
-		memcpy(buf, &len, sizeof(len));
-		buf += sizeof(len);
+        memcpy(buf, &len, sizeof(len));
+        buf += sizeof(len);
 
-		memcpy(buf, errmsg, len);
+        memcpy(buf, errmsg, len);
 
-		return ressz;
-	} else {
-		uint32_t ressz = sizeof(uint32_t) + 1 + sizeof(gr->value_size) + gr->value_size;
-		if (ressz > buflen) return UINT32_MAX;
+        return ressz;
+    } else {
+        uint32_t ressz = sizeof(uint32_t) + 1 + sizeof(gr->value_size) + gr->value_size;
+        if (ressz > buflen) return UINT32_MAX;
 
-		memcpy(buf, &ressz, sizeof(ressz));
-		buf += sizeof(ressz);
+        memcpy(buf, &ressz, sizeof(ressz));
+        buf += sizeof(ressz);
 
-		*buf = GET_SUCCESS;
-		buf++;
+        *buf = GET_SUCCESS;
+        buf++;
 
-		memcpy(buf, &gr->value_size, sizeof(gr->value_size));
-		buf += sizeof(gr->value_size);
+        memcpy(buf, &gr->value_size, sizeof(gr->value_size));
+        buf += sizeof(gr->value_size);
 
-		memcpy(buf, gr->value, gr->value_size);
-		buf += gr->value_size;
+        memcpy(buf, gr->value, gr->value_size);
+        buf += gr->value_size;
 
-		return ressz;
-	}
+        return ressz;
+    }
 }
 
 //ccask_db functions
@@ -241,12 +241,12 @@ ccask_db* ccask_db_populate(ccask_db* db) {
         iter = ccask_db_popnext(db);
     }
 
-	if (fseek(db->file, 0, SEEK_SET) == -1) {
-		perror("seek error");
-		errno = 0;
-	}
+    if (fseek(db->file, 0, SEEK_SET) == -1) {
+        perror("seek error");
+        errno = 0;
+    }
 
-	db->file_pos = ftell(db->file);
+    db->file_pos = ftell(db->file);
 
     return db;
 }
@@ -297,7 +297,7 @@ void ccask_db_destroy(ccask_db* db) {
     if (db) {
         free(db->path);
         //free(db->keydir);
-		ccask_keydir_delete(db->keydir);
+        ccask_keydir_delete(db->keydir);
         fclose(db->file);
         *db = (ccask_db) {
             0
@@ -528,164 +528,168 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
  **************/
 
 ccask_result* ccask_res_init(ccask_result* res, response_type type) {
-	if (res) {
-		// we always want to init res->gr to 0, since ccask_db_get will allocate memory for us
-		*res = (ccask_result) {
-			.type = type,
-			.gr = 0,
-		};
-	} else {
-		*res = (ccask_result){ 0 };
-	}
+    if (res) {
+        // we always want to init res->gr to 0, since ccask_db_get will allocate memory for us
+        *res = (ccask_result) {
+            .type = type,
+            .gr = 0,
+        };
+    } else {
+        *res = (ccask_result) {
+            0
+        };
+    }
 
-	return res;
+    return res;
 }
 
 ccask_result* ccask_res_new(response_type type) {
-	ccask_result* res = malloc(sizeof(ccask_result));
-	return ccask_res_init(res, type);
+    ccask_result* res = malloc(sizeof(ccask_result));
+    return ccask_res_init(res, type);
 }
 
 void ccask_res_destroy(ccask_result* res) {
-	if (res->gr) ccask_gr_delete(res->gr);
-	*res = (ccask_result){ 0 };
+    if (res->gr) ccask_gr_delete(res->gr);
+    *res = (ccask_result) {
+        0
+    };
 }
 
 void ccask_res_delete(ccask_result* res) {
-	ccask_res_destroy(res);
-	free(res);
+    ccask_res_destroy(res);
+    free(res);
 }
 
 void ccask_res_print(ccask_result* res) {
-	printf("Type: %s\n", res->type == 0 ? "GET" : "SET");
-	if (res->type == 0) {
-		ccask_gr_print(res->gr);
-	}
+    printf("Type: %s\n", res->type == 0 ? "GET" : "SET");
+    if (res->type == 0) {
+        ccask_gr_print(res->gr);
+    }
 }
 
 uint8_t ccask_res_type(const ccask_result* res) {
-	if (res) return res->type;
-	return 255;
+    if (res) return res->type;
+    return 255;
 }
 
-uint8_t* ccask_res_value(uint8_t* dest, const ccask_result* res){
-	if (!res || !res->gr) return 0;
+uint8_t* ccask_res_value(uint8_t* dest, const ccask_result* res) {
+    if (!res || !res->gr) return 0;
 
-	return ccask_gr_val(dest, res->gr);
+    return ccask_gr_val(dest, res->gr);
 }
 
 uint32_t ccask_res_vsz(const ccask_result* res) {
-	if (!res || !res->gr) return UINT32_MAX;
+    if (!res || !res->gr) return UINT32_MAX;
 
-	return ccask_gr_vsz(res->gr);
+    return ccask_gr_vsz(res->gr);
 }
 
 uint32_t ccask_sr_bytes(response_type rt, uint8_t* buf, size_t buflen) {
-	if (rt == SET_SUCCESS) {
-		char* msg = "SET succeeded";
-		uint32_t len = strlen(msg);
-		uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
-		if (buflen < msgsz) return UINT32_MAX;
+    if (rt == SET_SUCCESS) {
+        char* msg = "SET succeeded";
+        uint32_t len = strlen(msg);
+        uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
+        if (buflen < msgsz) return UINT32_MAX;
 
-		memcpy(buf, &msgsz, sizeof(uint32_t));
-		buf += sizeof(uint32_t);
+        memcpy(buf, &msgsz, sizeof(uint32_t));
+        buf += sizeof(uint32_t);
 
-		*buf = SET_SUCCESS;
-		buf++;
+        *buf = SET_SUCCESS;
+        buf++;
 
-		memcpy(buf, &len, sizeof(uint32_t));
-		buf += sizeof(uint32_t);
+        memcpy(buf, &len, sizeof(uint32_t));
+        buf += sizeof(uint32_t);
 
-		memcpy(buf, msg, len);
-		return msgsz;
-	} else if (rt == SET_FAIL) {
-		char* msg = "SET failed";
-		uint32_t len = strlen(msg);
-		uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
-		if (buflen < msgsz) return UINT32_MAX;
+        memcpy(buf, msg, len);
+        return msgsz;
+    } else if (rt == SET_FAIL) {
+        char* msg = "SET failed";
+        uint32_t len = strlen(msg);
+        uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
+        if (buflen < msgsz) return UINT32_MAX;
 
-		memcpy(buf, &msgsz, sizeof(uint32_t));
-		buf += sizeof(uint32_t);
+        memcpy(buf, &msgsz, sizeof(uint32_t));
+        buf += sizeof(uint32_t);
 
-		*buf = SET_FAIL;
-		buf++;
+        *buf = SET_FAIL;
+        buf++;
 
-		memcpy(buf, &len, sizeof(uint32_t));
-		buf += sizeof(uint32_t);
+        memcpy(buf, &len, sizeof(uint32_t));
+        buf += sizeof(uint32_t);
 
-		memcpy(buf, msg, len);
-		return msgsz;
-	}
+        memcpy(buf, msg, len);
+        return msgsz;
+    }
 
-	return UINT32_MAX;
+    return UINT32_MAX;
 }
 
 uint32_t ccask_res_bytes(ccask_result* res, uint8_t* buf, size_t buflen) {
-	if (buflen == 0 || !buf) return UINT32_MAX;
+    if (buflen == 0 || !buf) return UINT32_MAX;
 
-	switch(res->type)  {
-		case GET_SUCCESS:
-		case GET_FAIL:
-			return ccask_gr_bytes(res->gr, buf+1, buflen-1);
-		case SET_SUCCESS:
-		case SET_FAIL:
-			return ccask_sr_bytes(res->type, buf, buflen);
-		case BAD_COMMAND:
-		default:
-			return UINT32_MAX;
-	}
+    switch(res->type)  {
+    case GET_SUCCESS:
+    case GET_FAIL:
+        return ccask_gr_bytes(res->gr, buf+1, buflen-1);
+    case SET_SUCCESS:
+    case SET_FAIL:
+        return ccask_sr_bytes(res->type, buf, buflen);
+    case BAD_COMMAND:
+    default:
+        return UINT32_MAX;
+    }
 }
 
 /**@brief given a byte array representing a query return a ccask_result representing the request or 0 if the request is invalid*/
 ccask_result* ccask_query_interp(ccask_db* db, uint8_t* cmd) {
-	if (!db || !cmd) return 0;
-	// extract the message size:
-	uint32_t msgsz = NWK_BYTE_ARR_U32(cmd);
-	size_t index = 4;
+    if (!db || !cmd) return 0;
+    // extract the message size:
+    uint32_t msgsz = NWK_BYTE_ARR_U32(cmd);
+    size_t index = 4;
 
-	uint8_t cmd_byte = *(cmd+index);
-	index += 1;
+    uint8_t cmd_byte = *(cmd+index);
+    index += 1;
 
-	uint32_t ksz = NWK_BYTE_ARR_U32((cmd+index));
-	index += 4;
-	uint32_t vsz = NWK_BYTE_ARR_U32((cmd+index));
-	index += 4;
-
-
-	uint8_t* key = 0;
-	if (ksz > 0) {
-		key = malloc(ksz);
-		memcpy(key, cmd+index, ksz);
-		index += ksz;
-	}
-
-	uint8_t* val = 0;
-	if (vsz > 0) {
-		val = malloc(vsz);
-		memcpy(val, cmd+index, vsz);
-		index += vsz;
-	}
+    uint32_t ksz = NWK_BYTE_ARR_U32((cmd+index));
+    index += 4;
+    uint32_t vsz = NWK_BYTE_ARR_U32((cmd+index));
+    index += 4;
 
 
-	ccask_get_result* gr = 0;
-	response_type rt = BAD_COMMAND;
-	switch(cmd_byte) {
-		case GET_CMD:
-			gr = ccask_db_get(db, ksz, key);
-			rt = gr == 0 ? GET_FAIL : GET_SUCCESS;
-			break;
-		case SET_CMD:
-			db = ccask_db_set(db, ksz, key, vsz, val);
-			rt = db == 0 ? SET_FAIL : SET_SUCCESS;
-			break;
-		default:
-			break;
-	}
+    uint8_t* key = 0;
+    if (ksz > 0) {
+        key = malloc(ksz);
+        memcpy(key, cmd+index, ksz);
+        index += ksz;
+    }
 
-	ccask_result* res = ccask_res_new(rt);
-	res->gr = gr;
+    uint8_t* val = 0;
+    if (vsz > 0) {
+        val = malloc(vsz);
+        memcpy(val, cmd+index, vsz);
+        index += vsz;
+    }
 
-	free(key);
-	free(val);
-	return res;
+
+    ccask_get_result* gr = 0;
+    response_type rt = BAD_COMMAND;
+    switch(cmd_byte) {
+    case GET_CMD:
+        gr = ccask_db_get(db, ksz, key);
+        rt = gr == 0 ? GET_FAIL : GET_SUCCESS;
+        break;
+    case SET_CMD:
+        db = ccask_db_set(db, ksz, key, vsz, val);
+        rt = db == 0 ? SET_FAIL : SET_SUCCESS;
+        break;
+    default:
+        break;
+    }
+
+    ccask_result* res = ccask_res_new(rt);
+    res->gr = gr;
+
+    free(key);
+    free(val);
+    return res;
 }

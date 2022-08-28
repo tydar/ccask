@@ -36,8 +36,8 @@ ccask_kv* ccask_kv_init(ccask_kv* kv, uint32_t key_size, uint32_t value_size, co
             .value = malloc(value_size),
         };
 
-		memcpy(kv->key, key, key_size);
-		memcpy(kv->value, value, value_size);
+        memcpy(kv->key, key, key_size);
+        memcpy(kv->value, value, value_size);
     } else {
         *kv = (ccask_kv) {
             .key_size = 0,
