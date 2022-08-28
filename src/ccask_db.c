@@ -24,13 +24,6 @@
 #define SET_CMD 1
 
 // Response formats
-enum response_type {
-    GET_SUCCESS,
-    GET_FAIL,
-    SET_SUCCESS,
-    SET_FAIL,
-    BAD_COMMAND
-};
 
 // struct defs
 

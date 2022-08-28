@@ -6,6 +6,14 @@
 
 #include "ccask_kv.h"
 
+enum response_type {
+    GET_SUCCESS,
+    GET_FAIL,
+    SET_SUCCESS,
+    SET_FAIL,
+    BAD_COMMAND
+};
+
 typedef struct ccask_db ccask_db;
 typedef struct ccask_get_result ccask_get_result;
 typedef struct ccask_result ccask_result;
