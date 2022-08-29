@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200112L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -11,6 +13,7 @@
 #include "ccask_kv.h"
 #include "ccask_keydir.h"
 #include "ccask_db.h"
+#include "ccask_config.h"
 #include "util.h"
 
 void test_kdrow(void) {
@@ -115,8 +118,9 @@ void test_keydir(void) {
 
 void test_db(void) {
     puts("\t===== ccask_db tests ======");
+	ccask_config* cfg = ccask_config_from_env();
 
-    ccask_db* db = ccask_db_new("TEST_DB_FILE");
+    ccask_db* db = ccask_db_new("TEST_DB_FILE", cfg);
     puts("Assert DB ptr not null after _new...");
     assert(db != 0);
 
@@ -204,7 +208,7 @@ void test_db(void) {
     res = 0;
     res = ccask_query_interp(db, cmd);
     assert(res != 0);
-    assert(ccask_res_type(res) == 1);
+    assert(ccask_res_type(res) == SET_SUCCESS);
     puts("query type set accurate");
 
     cmdsz = 4 + 1 + 4 + 4 + 5;
@@ -223,7 +227,7 @@ void test_db(void) {
     ccask_res_delete(res);
     res = 0;
     res = ccask_query_interp(db, cmd);
-    assert(ccask_res_type(res) == 0);
+    assert(ccask_res_type(res) == GET_SUCCESS);
     puts("query interp succeeds");
 
     res_vsz = ccask_res_vsz(res);
@@ -289,6 +293,42 @@ void test_util(void) {
     puts("\t===== done =====");
 }
 
+void test_config(void) {
+    puts("\t===== test ccask_config =====");
+    int yes_replace = 1;
+
+    char* env_port = "8001";
+    assert(setenv("CCASK_PORT", env_port, yes_replace) == 0);
+
+    char* env_kdsize = "2048";
+    assert(setenv("CCASK_KDSIZE", env_kdsize, yes_replace) == 0);
+
+    char* env_maxconn = "10";
+    assert(setenv("CCASK_MAXCONN", env_maxconn, yes_replace) == 0);
+
+    char* env_maxmsg = "2048";
+    assert(setenv("CCASK_MAX_MSG_SIZE", env_maxmsg, yes_replace) == 0);
+
+    char* env_ipv = "INET4";
+    assert(setenv("CCASK_IPV", env_ipv, yes_replace) == 0);
+
+    ccask_config* cfg = ccask_config_from_env();
+    puts("config created from env successfully");
+
+    char* dest = malloc(strlen(env_port));
+    int rv = ccask_config_port(dest, cfg, strlen(env_port));
+    assert(rv == strlen(env_port));
+    assert(strcmp(dest, env_port) == 0);
+
+    assert(ccask_config_kdsize(cfg) == 2048);
+    assert(ccask_config_maxconn(cfg) == 10);
+    assert(ccask_config_maxmsg(cfg) == 2048);
+    assert(ccask_config_ipv(cfg) == INET4);
+    puts("config object populated as expected");
+
+    puts("\t===== done =====");
+}
+
 int main(void) {
     test_kdrow();
     puts("");
@@ -297,4 +337,6 @@ int main(void) {
     test_util();
     puts("");
     test_db();
+    puts("");
+    test_config();
 }

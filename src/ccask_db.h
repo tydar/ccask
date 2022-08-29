@@ -5,6 +5,15 @@
 #include <stdbool.h>
 
 #include "ccask_kv.h"
+#include "ccask_config.h"
+
+enum response_type {
+    GET_SUCCESS,
+    GET_FAIL,
+    SET_SUCCESS,
+    SET_FAIL,
+    BAD_COMMAND
+};
 
 typedef struct ccask_db ccask_db;
 typedef struct ccask_get_result ccask_get_result;
@@ -14,8 +23,8 @@ typedef enum response_type response_type;
 // ccask_db functions
 
 // initializer / destructors
-ccask_db* ccask_db_init(ccask_db* db, const char* path);
-ccask_db* ccask_db_new(const char* path);
+ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg);
+ccask_db* ccask_db_new(const char* path, ccask_config* cfg);
 void ccask_db_destroy(ccask_db* db);
 void ccask_db_delete(ccask_db* db);
 

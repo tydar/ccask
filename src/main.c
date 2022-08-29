@@ -6,17 +6,24 @@
 #include "ccask_keydir.h"
 #include "ccask_db.h"
 #include "ccask_server.h"
+#include "ccask_config.h"
 
 int main(void) {
+    ccask_config* cfg = ccask_config_from_env();
+    if (!cfg) {
+        fprintf(stderr, "ccask: failure to configure\n");
+        return 1;
+    }
+
     crc_init();
+    ccask_db* db = ccask_db_new("./ccask_file", cfg);
 
-    ccask_db* db = ccask_db_new("./ccask_file");
-
+    /*
     uint8_t key[5] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-    uint8_t value[10] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+    uint8_t value[10] = { 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41 };
 
     uint8_t key2[5] = { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE };
-    uint8_t value2[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    uint8_t value2[10] = { 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42 };
 
     db = ccask_db_set(db, 5, key, 10, value);
     db = ccask_db_set(db, 5, key2, 10, value2);
@@ -43,8 +50,9 @@ int main(void) {
     res = ccask_db_get(db, 5, key3);
     ccask_gr_print(res);
     ccask_gr_delete(res);
+    */
 
-    ccask_server* srv = ccask_server_new("29456", db);
+    ccask_server* srv = ccask_server_new(db, cfg);
     ccask_server_run(srv);
 
     ccask_db_delete(db);
