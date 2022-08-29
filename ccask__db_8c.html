@@ -69,7 +69,6 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ccask_db.c File Reference</div>  </div>
@@ -107,28 +106,12 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a92b58d4b979653a1d465e6baca332f08"><td class="memItemLeft" align="right" valign="top"><a id="a92b58d4b979653a1d465e6baca332f08"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>KEYDIR_SIZE</b>&#160;&#160;&#160;1024</td></tr>
-<tr class="separator:a92b58d4b979653a1d465e6baca332f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae227e0ae012e81252c364afa63019f39"><td class="memItemLeft" align="right" valign="top"><a id="ae227e0ae012e81252c364afa63019f39"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>GET_CMD</b>&#160;&#160;&#160;0</td></tr>
 <tr class="separator:ae227e0ae012e81252c364afa63019f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0269f32fb712f0ecc3a0b3639ff46253"><td class="memItemLeft" align="right" valign="top"><a id="a0269f32fb712f0ecc3a0b3639ff46253"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>SET_CMD</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a0269f32fb712f0ecc3a0b3639ff46253"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a3fd7592f4abddb72bb94a501da12a99b"><td class="memItemLeft" align="right" valign="top"><a id="a3fd7592f4abddb72bb94a501da12a99b"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>response_type</b> { <br />
-&#160;&#160;<b>GET_SUCCESS</b>, 
-<b>GET_FAIL</b>, 
-<b>SET_SUCCESS</b>, 
-<b>SET_FAIL</b>, 
-<br />
-&#160;&#160;<b>BAD_COMMAND</b>
-<br />
- }</td></tr>
-<tr class="separator:a3fd7592f4abddb72bb94a501da12a99b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -166,12 +149,12 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_gr_bytes</b
 <a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#ad464b9f380b19c535e74fdd7ea70e437">ccask_db_populate</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
 <tr class="memdesc:ad464b9f380b19c535e74fdd7ea70e437"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a malloc'd and initialized db and a valid file populates the keydir <br /></td></tr>
 <tr class="separator:ad464b9f380b19c535e74fdd7ea70e437"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f2323740dcef3e673d7dfc139e96403"><td class="memItemLeft" align="right" valign="top"><a id="a0f2323740dcef3e673d7dfc139e96403"></a>
-<a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_init</b> (<a class="el" href="structccask__db.html">ccask_db</a> *db, const char *path)</td></tr>
-<tr class="separator:a0f2323740dcef3e673d7dfc139e96403"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9838d0bc211e2b84f509e1dca2af7a99"><td class="memItemLeft" align="right" valign="top"><a id="a9838d0bc211e2b84f509e1dca2af7a99"></a>
-<a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_new</b> (const char *path)</td></tr>
-<tr class="separator:a9838d0bc211e2b84f509e1dca2af7a99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7da07b3bb6fa92782d18d9a95447d3c1"><td class="memItemLeft" align="right" valign="top"><a id="a7da07b3bb6fa92782d18d9a95447d3c1"></a>
+<a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_init</b> (<a class="el" href="structccask__db.html">ccask_db</a> *db, const char *path, <a class="el" href="structccask__config.html">ccask_config</a> *cfg)</td></tr>
+<tr class="separator:a7da07b3bb6fa92782d18d9a95447d3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37f473baf1dad8efa6712ff9ef23151c"><td class="memItemLeft" align="right" valign="top"><a id="a37f473baf1dad8efa6712ff9ef23151c"></a>
+<a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_new</b> (const char *path, <a class="el" href="structccask__config.html">ccask_config</a> *cfg)</td></tr>
+<tr class="separator:a37f473baf1dad8efa6712ff9ef23151c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7987d58e50294bb0b6151d3ab8eca707"><td class="memItemLeft" align="right" valign="top"><a id="a7987d58e50294bb0b6151d3ab8eca707"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_destroy</b> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
 <tr class="separator:a7987d58e50294bb0b6151d3ab8eca707"><td class="memSeparator" colspan="2">&#160;</td></tr>

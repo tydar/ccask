@@ -73,25 +73,27 @@ $(function() {
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef _CCASK_SERVER_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define _CCASK_SERVER_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;ccask_db.h&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structccask__server.html">ccask_server</a> <a class="code" href="structccask__server.html">ccask_server</a>;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// init / destroy</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<a class="code" href="structccask__server.html">ccask_server</a>* ccask_server_init(<a class="code" href="structccask__server.html">ccask_server</a>* srv, <span class="keywordtype">char</span>* port, <a class="code" href="structccask__db.html">ccask_db</a>* db);</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<a class="code" href="structccask__server.html">ccask_server</a>* ccask_server_new(<span class="keywordtype">char</span>* port, <a class="code" href="structccask__db.html">ccask_db</a>* db);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> ccask_server_destroy(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">void</span> ccask_server_delete(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keywordtype">void</span> ccask_server_print(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keywordtype">int</span> ccask_server_run(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;ccask_config.h&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;ccask_db.h&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structccask__server.html">ccask_server</a> <a class="code" href="structccask__server.html">ccask_server</a>;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// init / destroy</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<a class="code" href="structccask__server.html">ccask_server</a>* ccask_server_init(<a class="code" href="structccask__server.html">ccask_server</a>* srv, <a class="code" href="structccask__db.html">ccask_db</a>* db, <a class="code" href="structccask__config.html">ccask_config</a>* cfg);</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<a class="code" href="structccask__server.html">ccask_server</a>* ccask_server_new(<a class="code" href="structccask__db.html">ccask_db</a>* db, <a class="code" href="structccask__config.html">ccask_config</a>* cfg);</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">void</span> ccask_server_destroy(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">void</span> ccask_server_delete(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">void</span> ccask_server_print(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keywordtype">int</span> ccask_server_run(<a class="code" href="structccask__server.html">ccask_server</a>* srv);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructccask__db_html"><div class="ttname"><a href="structccask__db.html">ccask_db</a></div><div class="ttdef"><b>Definition:</b> ccask_db.c:37</div></div>
-<div class="ttc" id="astructccask__server_html"><div class="ttname"><a href="structccask__server.html">ccask_server</a></div><div class="ttdef"><b>Definition:</b> ccask_server.c:154</div></div>
+<div class="ttc" id="astructccask__db_html"><div class="ttname"><a href="structccask__db.html">ccask_db</a></div><div class="ttdef"><b>Definition:</b> ccask_db.c:27</div></div>
+<div class="ttc" id="astructccask__config_html"><div class="ttname"><a href="structccask__config.html">ccask_config</a></div><div class="ttdef"><b>Definition:</b> ccask_config.c:25</div></div>
+<div class="ttc" id="astructccask__server_html"><div class="ttname"><a href="structccask__server.html">ccask_server</a></div><div class="ttdef"><b>Definition:</b> ccask_server.c:158</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
