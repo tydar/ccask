@@ -16,9 +16,6 @@
  * @brief ccask_db.c implements useful DB operations (get, set, populate from file)
  */
 
-// TODO: make KEYDIR_SIZE configurable or at least think harder about a sensible value
-#define KEYDIR_SIZE 1024
-
 // TODO: change commands to an enum
 #define GET_CMD 0
 #define SET_CMD 1
@@ -244,13 +241,13 @@ ccask_db* ccask_db_populate(ccask_db* db) {
     return db;
 }
 
-ccask_db* ccask_db_init(ccask_db* db, const char* path) {
+ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
     if (db && path) {
         *db = (ccask_db) {
             .path = malloc(strlen(path)),
             .file_pos = 0,
             .file_id = 0,
-            .keydir = ccask_keydir_new(KEYDIR_SIZE),
+            .keydir = ccask_keydir_new(ccask_config_kdsize(cfg)),
             .file = 0,
         };
 
@@ -280,9 +277,9 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path) {
     return db;
 }
 
-ccask_db* ccask_db_new(const char* path) {
+ccask_db* ccask_db_new(const char* path, ccask_config* cfg) {
     ccask_db* db = malloc(sizeof(ccask_db));
-    db = ccask_db_init(db, path);
+    db = ccask_db_init(db, path, cfg);
     return db;
 }
 

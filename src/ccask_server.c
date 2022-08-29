@@ -32,7 +32,7 @@ void *get_in_addr(struct sockaddr* sa) {
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-unsigned int get_listener_socket(char* port, size_t maxconn) {
+unsigned int get_listener_socket(char* port, size_t maxconn, ccask_ip_v ipv) {
     if (!port) return -1;
     unsigned int listener;
     int yes = 1;
@@ -41,7 +41,17 @@ unsigned int get_listener_socket(char* port, size_t maxconn) {
     struct addrinfo hints, *ai, *p;
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
+
+    switch(ipv) {
+    case INET4:
+        hints.ai_family = AF_INET;
+    case INET6:
+        hints.ai_family = AF_INET6;
+    case UNSPEC:
+    default:
+        hints.ai_family = AF_UNSPEC;
+    }
+
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
     if ((rv = getaddrinfo(NULL, port, &hints, &ai)) != 0) {
@@ -152,8 +162,9 @@ struct ccask_server {
     struct pollfd* pfds;
     char* port;
     ccask_db* db;
-	size_t maxconn;
-	size_t max_msg_size;
+    size_t maxconn;
+    size_t max_msg_size;
+    ccask_ip_v ipv;
 };
 
 ccask_server* ccask_server_init(ccask_server* srv, ccask_db* db, ccask_config* cfg) {
@@ -164,19 +175,22 @@ ccask_server* ccask_server_init(ccask_server* srv, ccask_db* db, ccask_config* c
         srv->fd_size = 5;
         srv->pfds = malloc(sizeof(*srv->pfds) * srv->fd_size);
         srv->db = db;
-		srv->maxconn = ccask_config_maxconn(cfg);
-		srv->max_msg_size = ccask_config_maxmsg(cfg);
-		srv->port = malloc(PORT_SIZE);
-		int rv = ccask_config_port(srv->port, cfg, PORT_SIZE);
+        srv->maxconn = ccask_config_maxconn(cfg);
+        srv->max_msg_size = ccask_config_maxmsg(cfg);
+        srv->ipv = ccask_config_ipv(cfg);
+        srv->port = malloc(PORT_SIZE);
+        int rv = ccask_config_port(srv->port, cfg, PORT_SIZE);
 
-		if (rv <= 0) {
-			free(srv->port);
-			free(srv->pfds);
-			*srv = (ccask_server){ 0 };
-			srv->sd = -1;
-		}
+        if (rv <= 0) {
+            free(srv->port);
+            free(srv->pfds);
+            *srv = (ccask_server) {
+                0
+            };
+            srv->sd = -1;
+        }
 
-        if((srv->sd = get_listener_socket(srv->port, srv->maxconn)) == -1) {
+        if((srv->sd = get_listener_socket(srv->port, srv->maxconn, srv->ipv)) == -1) {
             *srv = (ccask_server) {
                 0
             };
@@ -201,7 +215,7 @@ ccask_server* ccask_server_new(ccask_db* db, ccask_config* cfg) {
 void ccask_server_destroy(ccask_server* srv) {
     if (srv) {
         free(srv->pfds);
-		free(srv->port);
+        free(srv->port);
         *srv = (ccask_server) {
             0
         };
