@@ -1,3 +1,4 @@
+#include "ccask_config.h"
 #define _POSIX_C_SOURCE 200112L
 
 #include <asm-generic/errno.h>
@@ -19,15 +20,9 @@
 #include "ccask_server.h"
 #include "util.h"
 
-// TODO: implement configuration of server parameters
-#define MAX_CONN 5
-#define MAX_CMD_SIZE 1024 // 1 KB limit for now
-
-// TODO: finish work on my scratch file netw_sockets (~/scratch/netw_sockets)
-// and then move that implementation here
+#define PORT_SIZE 5
 
 // helpers
-
 /*@brief get_in_addr ripped directly from beej's guide :+1:*/
 void *get_in_addr(struct sockaddr* sa) {
     if (sa->sa_family == AF_INET) {
@@ -37,7 +32,7 @@ void *get_in_addr(struct sockaddr* sa) {
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-unsigned int get_listener_socket(char* port) {
+unsigned int get_listener_socket(char* port, size_t maxconn) {
     if (!port) return -1;
     unsigned int listener;
     int yes = 1;
@@ -88,7 +83,7 @@ unsigned int get_listener_socket(char* port) {
         return -1;
     }
 
-    if (listen(listener, MAX_CONN) == -1) {
+    if (listen(listener, maxconn) == -1) {
         fprintf(stderr, "server: listen failed\n");
         return -1;
     }
@@ -121,8 +116,8 @@ int recv_until(int sockfd, uint8_t* buf, size_t len, int flags) {
     return total_read;
 }
 
-/**@brief recv_cmd receives a command of maximum size MAX_CMD_SIZE from the non-blocking socket sockfd. returns -1 on error or full command not received*/
-int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz) {
+/**@brief recv_cmd receives a command of maximum size max_msg_size from the non-blocking socket sockfd. returns -1 on error or full command not received*/
+int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz, size_t max_msg_size) {
     if (!buf) return -1;
     size_t len = 0;
     size_t len_size = 4; // bytes the msg length header
@@ -137,7 +132,7 @@ int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz) {
     len = NWK_BYTE_ARR_U32(buf);
     buf += recvd;
 
-    if (len == 0 || len > MAX_CMD_SIZE || len > bufsz-recvd) return -1;
+    if (len == 0 || len > max_msg_size || len > bufsz-recvd) return -1;
 
     recvd = recv_until(sockfd, buf, len-len_size, 0);
 
@@ -150,7 +145,6 @@ int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz) {
 }
 
 // ----- end helpers -----
-
 struct ccask_server {
     int sd;
     unsigned int fd_count;
@@ -158,25 +152,37 @@ struct ccask_server {
     struct pollfd* pfds;
     char* port;
     ccask_db* db;
+	size_t maxconn;
+	size_t max_msg_size;
 };
 
-ccask_server* ccask_server_init(ccask_server* srv, char* port, ccask_db* db) {
+ccask_server* ccask_server_init(ccask_server* srv, ccask_db* db, ccask_config* cfg) {
     // 1) get our addr info using the passed port
     // 2) bind our listening socket based on that
-    if (!port) port = "54569"; // a random default
-    if (srv && port && db) {
-        if((srv->sd = get_listener_socket(port)) == -1) {
+    if (srv && cfg && db) {
+        srv->fd_count = 0;
+        srv->fd_size = 5;
+        srv->pfds = malloc(sizeof(*srv->pfds) * srv->fd_size);
+        srv->db = db;
+		srv->maxconn = ccask_config_maxconn(cfg);
+		srv->max_msg_size = ccask_config_maxmsg(cfg);
+		srv->port = malloc(PORT_SIZE);
+		int rv = ccask_config_port(srv->port, cfg, PORT_SIZE);
+
+		if (rv <= 0) {
+			free(srv->port);
+			free(srv->pfds);
+			*srv = (ccask_server){ 0 };
+			srv->sd = -1;
+		}
+
+        if((srv->sd = get_listener_socket(srv->port, srv->maxconn)) == -1) {
             *srv = (ccask_server) {
                 0
             };
             srv->sd = -1;
             return srv;
         };
-        srv->fd_count = 0;
-        srv->fd_size = 5;
-        srv->pfds = malloc(sizeof(*srv->pfds) * srv->fd_size);
-        srv->db = db;
-        srv->port = port;
     } else {
         *srv = (ccask_server) {
             0
@@ -186,15 +192,16 @@ ccask_server* ccask_server_init(ccask_server* srv, char* port, ccask_db* db) {
     return srv;
 }
 
-ccask_server* ccask_server_new(char* port, ccask_db* db) {
+ccask_server* ccask_server_new(ccask_db* db, ccask_config* cfg) {
     ccask_server* srv = malloc(sizeof(ccask_server));
-    srv = ccask_server_init(srv, port, db);
+    srv = ccask_server_init(srv, db, cfg);
     return srv;
 }
 
 void ccask_server_destroy(ccask_server* srv) {
     if (srv) {
         free(srv->pfds);
+		free(srv->port);
         *srv = (ccask_server) {
             0
         };
@@ -244,7 +251,7 @@ int ccask_server_run(ccask_server* srv) {
     int newfd;
     char remoteIP[INET6_ADDRSTRLEN];
 
-    if (listen(srv->sd, MAX_CONN) == -1) {
+    if (listen(srv->sd, srv->maxconn) == -1) {
         perror("listen");
         return 1;
     }
@@ -284,8 +291,8 @@ int ccask_server_run(ccask_server* srv) {
                 } else {
                     // TODO: send an error to the client when appropriate
                     int sender_fd = srv->pfds[i].fd;
-                    uint8_t* buf = malloc(MAX_CMD_SIZE);
-                    int rv = recv_cmd(sender_fd, buf, MAX_CMD_SIZE);
+                    uint8_t* buf = malloc(srv->max_msg_size);
+                    int rv = recv_cmd(sender_fd, buf, srv->max_msg_size, srv->max_msg_size);
                     if (rv < 0 || buf == 0) {
                         if (buf == 0) {
                             fprintf(stderr, "ccask_server: socket %d hung up\n", sender_fd);
@@ -304,7 +311,7 @@ int ccask_server_run(ccask_server* srv) {
                     }
 
                     //TODO: should we use a new buffer? should it be allocated to a different size?
-                    rv = ccask_res_bytes(res, buf, MAX_CMD_SIZE);
+                    rv = ccask_res_bytes(res, buf, srv->max_msg_size);
                     if (rv < 0) {
                         fprintf(stderr, "ccask_server: result render error on socket %d\n", sender_fd);
                         break;
