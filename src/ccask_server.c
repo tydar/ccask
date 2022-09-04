@@ -135,6 +135,8 @@ int recv_cmd(int sockfd, uint8_t* buf, size_t bufsz, size_t max_msg_size) {
     int recvd = recv(sockfd, buf, len_size, 0);
 
     if (recvd < len_size) {
+        if (recvd == 0) return recvd;
+
         fprintf(stderr, "fewer than 4 bytes received\n");
         return -1;
     }
@@ -306,11 +308,16 @@ int ccask_server_run(ccask_server* srv) {
                     // TODO: send an error to the client when appropriate
                     int sender_fd = srv->pfds[i].fd;
                     uint8_t* buf = malloc(srv->max_msg_size);
+                    if (buf == 0) {
+                        perror("malloc");
+                        exit(1);
+                    }
+
                     int rv = recv_cmd(sender_fd, buf, srv->max_msg_size, srv->max_msg_size);
-                    if (rv < 0 || buf == 0) {
-                        if (buf == 0) {
-                            fprintf(stderr, "ccask_server: socket %d hung up\n", sender_fd);
-                        }  else {
+                    if (rv <= 0) {
+                        if (rv == 0) {
+                            fprintf(stderr, "pollserver: socket %d hung up\n", sender_fd);
+                        } else {
                             fprintf(stderr, "recv_cmd: %d\n", rv);
                         }
 
