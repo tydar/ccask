@@ -119,14 +119,16 @@ uint32_t ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen) {
 
         if (ressz > buflen) return UINT32_MAX;
 
-        memcpy(buf, &ressz, sizeof(ressz));
-        buf += sizeof(ressz);
+        uint32_t resszn = htonl(ressz);
+        memcpy(buf, &resszn, sizeof(resszn));
+        buf += sizeof(resszn);
 
         *buf = GET_FAIL;
         buf++;
 
-        memcpy(buf, &len, sizeof(len));
-        buf += sizeof(len);
+        uint32_t lenn = htonl(len);
+        memcpy(buf, &lenn, sizeof(lenn));
+        buf += sizeof(lenn);
 
         memcpy(buf, errmsg, len);
 
@@ -135,14 +137,16 @@ uint32_t ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen) {
         uint32_t ressz = sizeof(uint32_t) + 1 + sizeof(gr->value_size) + gr->value_size;
         if (ressz > buflen) return UINT32_MAX;
 
-        memcpy(buf, &ressz, sizeof(ressz));
-        buf += sizeof(ressz);
+        uint32_t resszn = htonl(ressz);
+        memcpy(buf, &resszn, sizeof(resszn));
+        buf += sizeof(resszn);
 
         *buf = GET_SUCCESS;
         buf++;
 
-        memcpy(buf, &gr->value_size, sizeof(gr->value_size));
-        buf += sizeof(gr->value_size);
+        uint32_t vszn = htonl(gr->value_size);
+        memcpy(buf, &vszn, sizeof(vszn));
+        buf += sizeof(vszn);
 
         memcpy(buf, gr->value, gr->value_size);
         buf += gr->value_size;
@@ -581,14 +585,16 @@ uint32_t ccask_sr_bytes(response_type rt, uint8_t* buf, size_t buflen) {
         uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
         if (buflen < msgsz) return UINT32_MAX;
 
-        memcpy(buf, &msgsz, sizeof(uint32_t));
-        buf += sizeof(uint32_t);
+        uint32_t msgszn = htonl(msgsz);
+        memcpy(buf, &msgszn, sizeof(msgszn));
+        buf += sizeof(msgszn);
 
         *buf = SET_SUCCESS;
         buf++;
 
-        memcpy(buf, &len, sizeof(uint32_t));
-        buf += sizeof(uint32_t);
+        uint32_t lenn = htonl(len);
+        memcpy(buf, &lenn, sizeof(lenn));
+        buf += sizeof(lenn);
 
         memcpy(buf, msg, len);
         return msgsz;
@@ -598,14 +604,16 @@ uint32_t ccask_sr_bytes(response_type rt, uint8_t* buf, size_t buflen) {
         uint32_t msgsz = sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint32_t) + len;
         if (buflen < msgsz) return UINT32_MAX;
 
-        memcpy(buf, &msgsz, sizeof(uint32_t));
-        buf += sizeof(uint32_t);
+        uint32_t msgszn = htonl(msgsz);
+        memcpy(buf, &msgszn, sizeof(msgszn));
+        buf += sizeof(msgszn);
 
         *buf = SET_FAIL;
         buf++;
 
-        memcpy(buf, &len, sizeof(uint32_t));
-        buf += sizeof(uint32_t);
+        uint32_t lenn = htonl(len);
+        memcpy(buf, &lenn, sizeof(lenn));
+        buf += sizeof(lenn);
 
         memcpy(buf, msg, len);
         return msgsz;
@@ -620,7 +628,7 @@ uint32_t ccask_res_bytes(ccask_result* res, uint8_t* buf, size_t buflen) {
     switch(res->type)  {
     case GET_SUCCESS:
     case GET_FAIL:
-        return ccask_gr_bytes(res->gr, buf+1, buflen-1);
+        return ccask_gr_bytes(res->gr, buf, buflen);
     case SET_SUCCESS:
     case SET_FAIL:
         return ccask_sr_bytes(res->type, buf, buflen);
