@@ -118,7 +118,7 @@ void test_keydir(void) {
 
 void test_db(void) {
     puts("\t===== ccask_db tests ======");
-	ccask_config* cfg = ccask_config_from_env();
+    ccask_config* cfg = ccask_config_from_env();
 
     ccask_db* db = ccask_db_new("TEST_DB_FILE", cfg);
     puts("Assert DB ptr not null after _new...");
