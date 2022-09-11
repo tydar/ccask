@@ -120,7 +120,7 @@ void test_db(void) {
     puts("\t===== ccask_db tests ======");
     ccask_config* cfg = ccask_config_from_env();
 
-    ccask_db* db = ccask_db_new("TEST_DB_FILE", cfg);
+    ccask_db* db = ccask_db_new("TEST_DB_DIR", cfg);
     puts("Assert DB ptr not null after _new...");
     assert(db != 0);
 
@@ -128,7 +128,7 @@ void test_db(void) {
     uint8_t key[5] = { 1, 2, 3, 4, 5 };
 
     uint32_t vsz = 5;
-    uint8_t val[5] = { 5, 4, 3, 2, 1 };
+    uint8_t val[5] = { 0x42, 0x42, 0x42, 0x42, 0x42 };
     db = ccask_db_set(db, ksz, key, vsz, val);
     puts("Assert DB not null after set....");
     assert(db != 0);

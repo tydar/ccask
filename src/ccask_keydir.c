@@ -157,7 +157,7 @@ size_t ccask_kdrow_vpos(ccask_kdrow* kdr) {
 }
 
 void ccask_kdrow_print(ccask_kdrow* kdr) {
-    printf("Key size: %u Value pos: %zu Value size: %u ", kdr->key_size, kdr->value_pos, kdr->value_size);
+    printf("File ID: %u Key size: %u Value pos: %zu Value size: %u ", kdr->file_id, kdr->key_size, kdr->value_pos, kdr->value_size);
     printf("Key: [ ");
     for (uint32_t i = 0; i < kdr->key_size; i++) {
         printf("%hhx ", kdr->key[i]);
