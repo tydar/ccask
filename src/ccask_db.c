@@ -29,10 +29,15 @@
 
 struct ccask_db {
     ccask_keydir* keydir;   // The keydir structure for this ccask instance
+
+    // active file information
     size_t file_pos;        // Cursor pos in the file
     size_t file_id;
-    char* path;             // Path to the DB file
+    size_t bytes_written;
     FILE* file;             // Pointer to the file we are writing
+
+    // db dir information
+    char* path;             // Path to the DB dir
     DIR* dir;               // Pointer to the DB file dir
     FILE* files[MAX_FILES]; // collection of all files in this ccask
 };
@@ -291,6 +296,7 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
             .path = malloc(strlen(path)),
             .file_pos = 0,
             .file_id = 0,
+            .bytes_written = 0,
             .keydir = ccask_keydir_new(ccask_config_kdsize(cfg)),
             .file = 0,
             .dir = 0,
@@ -342,6 +348,7 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
         }
 
         printf("new file %s open for writing\n", new_filename);
+        free(new_filename);
 
         db->file = new_file;
         db->files[db->file_id] = new_file;
@@ -377,6 +384,37 @@ void ccask_db_delete(ccask_db* db) {
     free(db);
 }
 
+/**@brief opens a new file for *db* or fails and quits the ccask process*/
+void ccask_db_newfile(ccask_db* db) {
+    db->file_id++;
+    if (db->file_id == UINT32_MAX) {
+        fprintf(stderr, "ccask_db: too many files\n");
+        exit(1);
+    }
+
+    char* new_filename = malloc(strlen(db->path) + 1 + strlen(db->path) + MAX_FILE_CHARS);
+    int res = snprintf(new_filename, strlen(db->path) + strlen(db->path) + 1 + MAX_FILE_CHARS, "%s/%s_%zu", db->path, db->path, db->file_id);
+    if (res < 0) {
+        fprintf(stderr, "error constructing new filename\n");
+        exit(1);
+    }
+
+    errno = 0;
+    FILE* new_file = fopen(new_filename, "w+b");
+    if (!new_file) {
+        fprintf(stderr, "%s\n", new_filename);
+        perror("fopen");
+        exit(1);
+    }
+
+    printf("ccask_db_newfile: new file %s open for writing\n", new_filename);
+
+    db->file = new_file;
+    db->files[db->file_id] = new_file;
+    db->bytes_written = 0;
+
+    free(new_filename);
+}
 
 /**
  * set implementation
@@ -391,6 +429,11 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
 
     // allocate a byte array large enough for the
     size_t row_size = sizeof(uint32_t) + sizeof(ts) + sizeof(key_size) + key_size + sizeof(value_size) + value_size;
+
+    // check to see if we have room in the file for this row
+    // if not, we need to go to a new file
+    if(db->bytes_written + row_size > MAX_FILE_BYTES || db->bytes_written + row_size < db->bytes_written) ccask_db_newfile(db);
+
     uint8_t* row = malloc(row_size);
 
     // copy each piece to the byte array
@@ -421,6 +464,7 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
     }
 
     size_t n = fwrite(row, 1, row_size, db->file);
+    db->bytes_written += row_size;
 
     // if we didn't write a full row, just return a null pointer.
     // we won't reset the file_pos or create a keydir entry.

@@ -10,6 +10,7 @@
 #define MAX_FILES 256
 #define MAX_FILE_CHARS 4 // number of digits in MAX_FILES + 1 for \0
 #define CCASK_MAGIC_NUMBER 0x0CCA2CFF
+#define MAX_FILE_BYTES 512*(1024)*(1024) // 512 MB
 
 enum response_type {
     GET_SUCCESS,
