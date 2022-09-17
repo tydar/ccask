@@ -10,7 +10,11 @@
 #define MAX_FILES 256
 #define MAX_FILE_CHARS 4 // number of digits in MAX_FILES + 1 for \0
 #define CCASK_MAGIC_NUMBER 0x0CCA2CFF
+
+// if we are compiling tests, we want to have a small max-file-size for easier testing
+// #define MAX_FILE_BYTES 1024
 #define MAX_FILE_BYTES 512*(1024)*(1024) // 512 MB
+
 
 enum response_type {
     GET_SUCCESS,
@@ -36,6 +40,9 @@ void ccask_db_delete(ccask_db* db);
 // get / set
 ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t value_size, uint8_t* value);
 ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key);
+
+// getters
+size_t ccask_db_fid(const ccask_db* db);
 
 // ccask_get_result functions
 ccask_get_result* ccask_gr_init(ccask_get_result* gr, uint32_t value_size, uint8_t* value, bool crc_passed);

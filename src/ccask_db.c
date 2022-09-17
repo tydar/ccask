@@ -416,6 +416,11 @@ void ccask_db_newfile(ccask_db* db) {
     free(new_filename);
 }
 
+size_t ccask_db_fid(const ccask_db* db) {
+    if(!db) return SIZE_MAX;
+    return db->file_id;
+}
+
 /**
  * set implementation
  * 1) calc crc
