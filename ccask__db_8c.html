@@ -89,6 +89,9 @@ $(function() {
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;errno.h&gt;</code><br />
+<code>#include &lt;dirent.h&gt;</code><br />
+<code>#include &lt;sys/types.h&gt;</code><br />
+<code>#include &lt;sys/stat.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for ccask_db.c:</div>
 <div class="dyncontent">
@@ -141,10 +144,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_gr_print</b> (<
 <tr class="memitem:afb4c8b70e15ed4e1abe03e7fb3cf89a1"><td class="memItemLeft" align="right" valign="top"><a id="afb4c8b70e15ed4e1abe03e7fb3cf89a1"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_gr_bytes</b> (<a class="el" href="structccask__get__result.html">ccask_get_result</a> *gr, uint8_t *buf, size_t buflen)</td></tr>
 <tr class="separator:afb4c8b70e15ed4e1abe03e7fb3cf89a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac36d28165bfc9f0362a5c0b28294c04d"><td class="memItemLeft" align="right" valign="top"><a id="ac36d28165bfc9f0362a5c0b28294c04d"></a>
-<a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#ac36d28165bfc9f0362a5c0b28294c04d">ccask_db_popnext</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
-<tr class="memdesc:ac36d28165bfc9f0362a5c0b28294c04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">internal fn to populate next keydir entry <br /></td></tr>
-<tr class="separator:ac36d28165bfc9f0362a5c0b28294c04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6221e62aaae7dcdf5e83707cf6ea5096"><td class="memItemLeft" align="right" valign="top"><a id="a6221e62aaae7dcdf5e83707cf6ea5096"></a>
+<a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#a6221e62aaae7dcdf5e83707cf6ea5096">ccask_db_popnext</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db, int index)</td></tr>
+<tr class="memdesc:a6221e62aaae7dcdf5e83707cf6ea5096"><td class="mdescLeft">&#160;</td><td class="mdescRight">internal fn to populate next keydir entry <br /></td></tr>
+<tr class="separator:a6221e62aaae7dcdf5e83707cf6ea5096"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad464b9f380b19c535e74fdd7ea70e437"><td class="memItemLeft" align="right" valign="top"><a id="ad464b9f380b19c535e74fdd7ea70e437"></a>
 <a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#ad464b9f380b19c535e74fdd7ea70e437">ccask_db_populate</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
 <tr class="memdesc:ad464b9f380b19c535e74fdd7ea70e437"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a malloc'd and initialized db and a valid file populates the keydir <br /></td></tr>
@@ -161,6 +164,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_destroy</b> 
 <tr class="memitem:aa44b7b26df3d15b7ce362ba8284d3d5e"><td class="memItemLeft" align="right" valign="top"><a id="aa44b7b26df3d15b7ce362ba8284d3d5e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_delete</b> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
 <tr class="separator:aa44b7b26df3d15b7ce362ba8284d3d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42d304434ff75fa65a4cc4737dc79623"><td class="memItemLeft" align="right" valign="top"><a id="a42d304434ff75fa65a4cc4737dc79623"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#a42d304434ff75fa65a4cc4737dc79623">ccask_db_newfile</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
+<tr class="memdesc:a42d304434ff75fa65a4cc4737dc79623"><td class="mdescLeft">&#160;</td><td class="mdescRight">opens a new file for <em>db</em> or fails and quits the ccask process <br /></td></tr>
+<tr class="separator:a42d304434ff75fa65a4cc4737dc79623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91e7689614e98c4da624acbb4acedbac"><td class="memItemLeft" align="right" valign="top"><a id="a91e7689614e98c4da624acbb4acedbac"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_fid</b> (const <a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
+<tr class="separator:a91e7689614e98c4da624acbb4acedbac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acaaba097f40e30e25ebbb6fd055501b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#acaaba097f40e30e25ebbb6fd055501b8">ccask_db_set</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db, uint32_t key_size, uint8_t *key, uint32_t value_size, uint8_t *value)</td></tr>
 <tr class="memdesc:acaaba097f40e30e25ebbb6fd055501b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">set implementation 1) calc crc 2) at file_pos write crc timestamp keysize valuesize key value 3) create and insert a keydir entry  <a href="ccask__db_8c.html#acaaba097f40e30e25ebbb6fd055501b8">More...</a><br /></td></tr>
 <tr class="separator:acaaba097f40e30e25ebbb6fd055501b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
