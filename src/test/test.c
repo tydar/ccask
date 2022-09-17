@@ -120,7 +120,7 @@ void test_db(void) {
     puts("\t===== ccask_db tests ======");
     ccask_config* cfg = ccask_config_from_env();
 
-    ccask_db* db = ccask_db_new("TEST_DB_FILE", cfg);
+    ccask_db* db = ccask_db_new("TEST_DB_DIR", cfg);
     puts("Assert DB ptr not null after _new...");
     assert(db != 0);
 
@@ -128,7 +128,7 @@ void test_db(void) {
     uint8_t key[5] = { 1, 2, 3, 4, 5 };
 
     uint32_t vsz = 5;
-    uint8_t val[5] = { 5, 4, 3, 2, 1 };
+    uint8_t val[5] = { 0x42, 0x42, 0x42, 0x42, 0x42 };
     db = ccask_db_set(db, ksz, key, vsz, val);
     puts("Assert DB not null after set....");
     assert(db != 0);
@@ -240,6 +240,30 @@ void test_db(void) {
     res_val = ccask_res_value(res_val, res);
     assert(memcmp(val2, res_val, vsz) == 0);
     puts("query get result accurate value");
+
+    printf("test file-to-file transition. max file size: %d\n", MAX_FILE_BYTES);
+    size_t fid_before = ccask_db_fid(db);
+    uint8_t k1[8], k2[8];
+    uint8_t v1[512], v2[512];
+    for (size_t i = 0; i < 8; i++) {
+        k1[i] = 0x42 + i;
+        k2[7-i] = 0x42 + i;
+    }
+
+    for (size_t i = 0; i < 512; i++) {
+        v1[i] = (i % 26) + 0x42;
+        v2[511-i] = (i % 26) + 0x42;
+    }
+
+    db = ccask_db_set(db, 8, k1, 512, v1);
+    assert(db != 0);
+
+    db = ccask_db_set(db, 8, k2, 512, v2);
+    assert(db != 0);
+
+    size_t fid_after = ccask_db_fid(db);
+    puts("Asserting fid has been advanced...");
+    assert(fid_before != fid_after);
 
     ccask_db_delete(db);
     ccask_gr_delete(gr);

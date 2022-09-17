@@ -11,6 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 /**@file
  * @brief ccask_db.c implements useful DB operations (get, set, populate from file)
@@ -25,11 +28,18 @@
 // struct defs
 
 struct ccask_db {
-    ccask_keydir* keydir; // The keydir structure for this ccask instance
-    size_t file_pos;      // Cursor pos in the file
+    ccask_keydir* keydir;   // The keydir structure for this ccask instance
+
+    // active file information
+    size_t file_pos;        // Cursor pos in the file
     size_t file_id;
-    char* path;           // Path to the DB file
-    FILE* file;           // Pointer to the file we are writing
+    size_t bytes_written;
+    FILE* file;             // Pointer to the file we are writing
+
+    // db dir information
+    char* path;             // Path to the DB dir
+    DIR* dir;               // Pointer to the DB file dir
+    FILE* files[MAX_FILES]; // collection of all files in this ccask
 };
 
 struct ccask_get_result {
@@ -161,8 +171,10 @@ uint32_t ccask_gr_bytes(ccask_get_result* gr, uint8_t* buf, size_t buflen) {
 // used to populate the keydir when the software starts iff a ccask file is present
 
 /**@brief internal fn to populate next keydir entry*/
-ccask_db* ccask_db_popnext(ccask_db* db) {
-    FILE* file = db->file;
+ccask_db* ccask_db_popnext(ccask_db* db, int index) {
+    FILE* file = db->files[index];
+    if (!file) return 0;
+
     size_t pos = ftell(file);
     uint8_t* hdrb = malloc(HEADER_BYTES);
     size_t hdr_n = fread(hdrb, 1, HEADER_BYTES, file);
@@ -203,7 +215,8 @@ ccask_db* ccask_db_popnext(ccask_db* db) {
     key = ccask_kv_key(key, kv);
 
     // TODO: file ID
-    ccask_kdrow* kdr = ccask_kdrow_new(ksz, key, 0, vsz, pos, time(NULL));
+    ccask_kdrow* kdr = ccask_kdrow_new(ksz, key, index, vsz, pos, time(NULL));
+    ccask_kdrow_print(kdr);
     if (!ccask_keydir_insert(db->keydir, kdr)) {
         free(key);
         free(hdrb);
@@ -229,18 +242,50 @@ ccask_db* ccask_db_popnext(ccask_db* db) {
 /**@brief given a malloc'd and initialized db and a valid file populates the keydir*/
 ccask_db* ccask_db_populate(ccask_db* db) {
     if (!db) return 0;
-    ccask_db* iter = ccask_db_popnext(db);
 
-    while(iter) {
-        iter = ccask_db_popnext(db);
+    errno = 0;
+    struct dirent* pDirent;
+
+    for (pDirent = readdir(db->dir); pDirent; pDirent = readdir(db->dir)) {
+        if (strcmp(".", pDirent->d_name) == 0 || strcmp("..", pDirent->d_name) == 0) continue;
+
+        // we will treat every file in the directory as if it were a ccask file
+        // TODO: introduce magic number or other file ID method
+        size_t pathlen = strlen(db->path) + strlen(pDirent->d_name) + 1 + 1; // path len + filename len + / + \0
+        char* path = malloc(pathlen);
+        printf("file ID: %zu file name: %s\n", db->file_id, pDirent->d_name);
+
+        path = strcpy(path, db->path);
+        path = strcat(path, "/");
+        path = strncat(path, pDirent->d_name, strlen(pDirent->d_name));
+        if (!path) return 0;
+
+        FILE *f = fopen(path, "rb");
+        if (!f) {
+            fprintf(stderr, "fopen(%s,...)\n", path);
+            perror("fopen");
+            exit(1);
+        }
+
+        db->files[db->file_id] = f;
+        db->file_id++;
     }
 
-    if (fseek(db->file, 0, SEEK_SET) == -1) {
-        perror("seek error");
-        errno = 0;
+    if (errno != 0) {
+        perror("readdir");
+        exit(1);
     }
 
-    db->file_pos = ftell(db->file);
+
+    for (size_t i = 0; i < MAX_FILES; i++) {
+        if (!db->files[i]) break;
+
+        ccask_db* iter = ccask_db_popnext(db, i);
+
+        while(iter) {
+            iter = ccask_db_popnext(db, i);
+        }
+    }
 
     return db;
 }
@@ -251,27 +296,62 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
             .path = malloc(strlen(path)),
             .file_pos = 0,
             .file_id = 0,
+            .bytes_written = 0,
             .keydir = ccask_keydir_new(ccask_config_kdsize(cfg)),
             .file = 0,
+            .dir = 0,
+            .files = { 0 },
         };
 
-        //TODO: check errors on fopen
         db->path = strncpy(db->path, path, strlen(path));
+        DIR* dir = opendir(path);
+        if (dir == 0) {
+            // we were unable to open the dir
+            if (errno == ENOENT && strcmp(db->path, "") != 0) {
+                // directory does not exist, try to create it
+                errno = 0;
+                int res = mkdir(path, 0700);
+                if (res == -1) {
+                    perror("mkdir");
+                    exit(1);
+                }
 
-        //TODO: allow restarting the ccask process without clobbering the current file
-        FILE* f = fopen(path, "ab+");
-
-        if (!f) {
-            perror("fopen");
-            errno = 0;
-        } else {
-            // if the file existed with content we want to rewind to the start
-            if (ftell(f) != 0) fseek(f, 0, SEEK_SET);
-            db->file = f;
-            if (!ccask_db_populate(db)) *db = (ccask_db) {
-                0
-            };
+                dir = opendir(path);
+                if (dir == 0) {
+                    perror("opendir");
+                    exit(1);
+                }
+            } else {
+                perror("opendir");
+                exit(1);
+            }
         }
+
+        db->dir = dir;
+        if (!ccask_db_populate(db)) *db = (ccask_db) {
+            0
+        };
+
+        char* new_filename = malloc(strlen(path) + 1 + strlen(path) + MAX_FILE_CHARS);
+        int res = snprintf(new_filename, strlen(path) + strlen(path) + 1 + MAX_FILE_CHARS, "%s/%s_%zu", path, path, db->file_id);
+        if (res < 0) {
+            fprintf(stderr, "error constructing new filename\n");
+            exit(1);
+        }
+
+        errno = 0;
+        FILE* new_file = fopen(new_filename, "w+b");
+        if (!new_file) {
+            fprintf(stderr, "%s\n", new_filename);
+            perror("fopen");
+            exit(1);
+        }
+
+        printf("new file %s open for writing\n", new_filename);
+        free(new_filename);
+
+        db->file = new_file;
+        db->files[db->file_id] = new_file;
     } else {
         *db = (ccask_db) {
             0
@@ -304,6 +384,42 @@ void ccask_db_delete(ccask_db* db) {
     free(db);
 }
 
+/**@brief opens a new file for *db* or fails and quits the ccask process*/
+void ccask_db_newfile(ccask_db* db) {
+    db->file_id++;
+    if (db->file_id == UINT32_MAX) {
+        fprintf(stderr, "ccask_db: too many files\n");
+        exit(1);
+    }
+
+    char* new_filename = malloc(strlen(db->path) + 1 + strlen(db->path) + MAX_FILE_CHARS);
+    int res = snprintf(new_filename, strlen(db->path) + strlen(db->path) + 1 + MAX_FILE_CHARS, "%s/%s_%zu", db->path, db->path, db->file_id);
+    if (res < 0) {
+        fprintf(stderr, "error constructing new filename\n");
+        exit(1);
+    }
+
+    errno = 0;
+    FILE* new_file = fopen(new_filename, "w+b");
+    if (!new_file) {
+        fprintf(stderr, "%s\n", new_filename);
+        perror("fopen");
+        exit(1);
+    }
+
+    printf("ccask_db_newfile: new file %s open for writing\n", new_filename);
+
+    db->file = new_file;
+    db->files[db->file_id] = new_file;
+    db->bytes_written = 0;
+
+    free(new_filename);
+}
+
+size_t ccask_db_fid(const ccask_db* db) {
+    if(!db) return SIZE_MAX;
+    return db->file_id;
+}
 
 /**
  * set implementation
@@ -318,6 +434,11 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
 
     // allocate a byte array large enough for the
     size_t row_size = sizeof(uint32_t) + sizeof(ts) + sizeof(key_size) + key_size + sizeof(value_size) + value_size;
+
+    // check to see if we have room in the file for this row
+    // if not, we need to go to a new file
+    if(db->bytes_written + row_size > MAX_FILE_BYTES || db->bytes_written + row_size < db->bytes_written) ccask_db_newfile(db);
+
     uint8_t* row = malloc(row_size);
 
     // copy each piece to the byte array
@@ -348,6 +469,7 @@ ccask_db* ccask_db_set(ccask_db* db, uint32_t key_size, uint8_t* key, uint32_t v
     }
 
     size_t n = fwrite(row, 1, row_size, db->file);
+    db->bytes_written += row_size;
 
     // if we didn't write a full row, just return a null pointer.
     // we won't reset the file_pos or create a keydir entry.
@@ -471,16 +593,42 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
         return 0;
     }
 
-    if (fseek(db->file, value_pos, SEEK_SET) == -1) {
+    FILE* file = db->files[file_id];
+
+    if (fseek(file, value_pos, SEEK_SET) != 0) {
         perror("seek error");
         errno = 0;
         return 0;
     }
 
-    size_t row_size = HEADER_SIZE + value_size + key_size;
+    size_t row_size = HEADER_BYTES + value_size + key_size;
 
     uint8_t* row_ptr = malloc(row_size);
-    size_t read_size = fread(row_ptr, row_size, 1, db->file);
+    size_t read_size = fread(row_ptr, row_size, 1, file);
+
+    if (read_size < 1) {
+        printf("read size: %zu\n", read_size);
+        for (size_t i = 0; i < read_size*row_size; i++) {
+            printf("0x%.02x ", row_ptr[i]);
+        }
+        puts("");
+        free(row_ptr);
+
+        int ferr = ferror(file);
+        printf("ferror: %d\n", ferr);
+
+        if(ferr) perror("fread");
+
+        int fe = feof(file);
+        printf("feof: %d\n", fe);
+
+        int ft = ftell(file);
+        printf("ftell: %d\n", ft);
+
+        printf("file_id: %u\n", file_id);
+
+        return 0;
+    }
 
     ccask_header* hdr = ccask_header_new(0, 0, 0, 0);
     if (!ccask_header_deserialize(hdr, row_ptr)) {
@@ -504,6 +652,8 @@ ccask_get_result* ccask_db_get(ccask_db* db, uint32_t key_size, uint8_t* key) {
 
     bool crc_flag = crc_check(hdr, kv);
     ccask_get_result* gr = ccask_gr_new(value_size, value, crc_flag);
+
+    ccask_gr_print(gr);
 
     ccask_kv_delete(kv);
     ccask_header_delete(hdr);
