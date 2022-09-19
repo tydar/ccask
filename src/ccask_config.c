@@ -8,6 +8,7 @@
 #define DEFAULT_MAXCONN 5
 #define DEFAULT_MAXMSG 1024
 #define DEFAULT_IPV UNSPEC
+#define DEFAULT_KDMAX 32768 // 1024 * (2^5) i.e. can expand the keydir 5 times
 
 char* ipv_string(ccask_ip_v ipv) {
     switch(ipv) {
@@ -25,6 +26,7 @@ char* ipv_string(ccask_ip_v ipv) {
 struct ccask_config {
     char* port;
     size_t keydir_size;
+    size_t keydir_max_size;
     size_t maxconn;
     size_t max_msg_size;
     ccask_ip_v ipv;
@@ -35,16 +37,18 @@ char* KDSIZE = "CCASK_KDSIZE";
 char* MAXCONN = "CCASK_MAXCONN";
 char* MAXMSG = "CCASK_MAX_MSG_SIZE";
 char* IPV = "CCASK_IPV";
+char* KDMAX = "CCASK_KDMAXSIZE";
 
 ccask_config* ccask_config_init(ccask_config* cf, char* port, size_t keydir_size, size_t maxconn, size_t max_msg_size,
-                                ccask_ip_v ipv) {
+                                ccask_ip_v ipv, size_t keydir_max_size) {
     if (cf) {
         *cf = (ccask_config) {
             .port = malloc(strlen(port)),
             .keydir_size = keydir_size,
             .maxconn = maxconn,
             .max_msg_size = max_msg_size,
-            .ipv = ipv
+            .ipv = ipv,
+            .keydir_max_size = keydir_max_size
         };
 
         if (cf->port) {
@@ -63,10 +67,10 @@ ccask_config* ccask_config_init(ccask_config* cf, char* port, size_t keydir_size
     return cf;
 }
 
-ccask_config* ccask_config_new(char* port, size_t keydir_size, size_t maxconn, size_t max_msg_size, ccask_ip_v ipv) {
+ccask_config* ccask_config_new(char* port, size_t keydir_size, size_t maxconn, size_t max_msg_size, ccask_ip_v ipv, size_t keydir_max_size) {
     ccask_config* cf = malloc(sizeof(ccask_config));
     if (!cf) return 0;
-    cf = ccask_config_init(cf, port, keydir_size, maxconn, max_msg_size, ipv);
+    cf = ccask_config_init(cf, port, keydir_size, maxconn, max_msg_size, ipv, keydir_max_size);
     return cf;
 }
 
@@ -77,6 +81,7 @@ ccask_config* ccask_config_from_env() {
     char* maxconn_str = getenv(MAXCONN);
     char* maxmsg_str = getenv(MAXMSG);
     char* ipv_str = getenv(IPV);
+    char* kdmax_str = getenv(KDMAX);
 
 
     char* port = 0;
@@ -127,7 +132,16 @@ ccask_config* ccask_config_from_env() {
         }
     }
 
-    return ccask_config_new(port, kdsize, maxconn, maxmsg, ipv);
+    size_t kdmax = DEFAULT_KDMAX;
+    if (kdmax_str) {
+        kdmax = strtoull(kdmax_str, NULL, 10);
+        if (kdmax == 0) {
+            fprintf(stderr, "config: CCASK_KDMAX env value %s unrecognized; using default %ul\n", kdmax_str, DEFAULT_KDMAX);
+            kdmax = DEFAULT_KDMAX;
+        }
+    }
+
+    return ccask_config_new(port, kdsize, maxconn, maxmsg, ipv, kdmax);
 }
 
 void ccask_config_destroy(ccask_config* cf) {
@@ -145,12 +159,13 @@ void ccask_config_delete(ccask_config* cf) {
 }
 
 void ccask_config_print(ccask_config* cf) {
-    printf("port: %s\tkeydir size: %zu\tmax connection count: %zu\nmax message size: %zu B\tIP type: %s\n",
+    printf("port: %s\tkeydir size: %zu\tmax connection count: %zu\nmax message size: %zu B\tIP type: %s\nkeydir max size: %zu\n",
            cf->port,
            cf->keydir_size,
            cf->maxconn,
            cf->max_msg_size,
-           ipv_string(cf->ipv));
+           ipv_string(cf->ipv),
+           cf->keydir_max_size);
 }
 
 int ccask_config_port(char* dest, ccask_config* src, size_t destlen) {
@@ -161,18 +176,22 @@ int ccask_config_port(char* dest, ccask_config* src, size_t destlen) {
     return len;
 }
 
-size_t ccask_config_kdsize(ccask_config* src) {
+size_t ccask_config_kdsize(const ccask_config* src) {
     return src->keydir_size;
 }
 
-size_t ccask_config_maxconn(ccask_config* src) {
+size_t ccask_config_maxconn(const ccask_config* src) {
     return src->maxconn;
 }
 
-size_t ccask_config_maxmsg(ccask_config* src) {
+size_t ccask_config_maxmsg(const ccask_config* src) {
     return src->max_msg_size;
 }
 
-ccask_ip_v ccask_config_ipv(ccask_config* src) {
+ccask_ip_v ccask_config_ipv(const ccask_config* src) {
     return src->ipv;
+}
+
+size_t ccask_config_kdmax(const ccask_config* src) {
+    return src->keydir_max_size;
 }
