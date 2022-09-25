@@ -66,7 +66,7 @@ void test_keydir(void) {
     size_t kdsz = 64;
 
     puts("keydir non-null after ccask_keydir_new");
-    kd = ccask_keydir_new(kdsz);
+    kd = ccask_keydir_new(kdsz, kdsz*2);
     assert(kd != 0);
 
     puts("keydir non-null after insert");
@@ -94,7 +94,7 @@ void test_keydir(void) {
     ccask_keydir_delete(kd);
 
     puts("with keydir size 1 (i.e. all vals mapped to same key hash) we can still discriminate btwn keys");
-    kd = ccask_keydir_new(1);
+    kd = ccask_keydir_new(1, 1);
     assert(kd != 0);
 
     uint8_t key2[5] = { 0, 0, 1, 0, 0 };

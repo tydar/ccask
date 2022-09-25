@@ -297,7 +297,7 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
             .file_pos = 0,
             .file_id = 0,
             .bytes_written = 0,
-            .keydir = ccask_keydir_new(ccask_config_kdsize(cfg)),
+            .keydir = ccask_keydir_new(ccask_config_kdsize(cfg), ccask_config_kdmax(cfg)),
             .file = 0,
             .dir = 0,
             .files = { 0 },

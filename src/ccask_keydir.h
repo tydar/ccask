@@ -29,8 +29,8 @@ void ccask_kdrow_print(ccask_kdrow* kdr);
 typedef struct ccask_keydir ccask_keydir;
 
 // ccask_keydir init / delete
-ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size);
-ccask_keydir* ccask_keydir_new(size_t size);
+ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size, size_t max_size);
+ccask_keydir* ccask_keydir_new(size_t size, size_t max_size);
 void ccask_keydir_destroy(ccask_keydir* kd);
 void ccask_keydir_delete(ccask_keydir* kd);
 
