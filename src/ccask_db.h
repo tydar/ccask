@@ -12,7 +12,7 @@
 #define CCASK_MAGIC_NUMBER 0x0CCA2CFF
 
 // if we are compiling tests, we want to have a small max-file-size for easier testing
-// #define MAX_FILE_BYTES 1024
+//#define MAX_FILE_BYTES 1024
 #define MAX_FILE_BYTES 512*(1024)*(1024) // 512 MB
 
 

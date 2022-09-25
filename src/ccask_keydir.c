@@ -32,7 +32,10 @@ struct ccask_kdrow {
 };
 
 struct ccask_keydir {
+    uint8_t load_factor; // load_factor / 100 == ratio of entires in table -> size
     size_t size;
+    size_t entry_count;
+    size_t max_size;
     ccask_kdrow* entries;
 };
 
@@ -166,11 +169,14 @@ void ccask_kdrow_print(ccask_kdrow* kdr) {
 }
 
 /*------------------keydir functions------------------*/
-ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size) {
+ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size, size_t max_size) {
     if (kd) {
         *kd = (ccask_keydir) {
+            .load_factor = 70,
             .size = size,
             .entries = malloc(size*sizeof(ccask_kdrow)),
+            .entry_count = 0,
+            .max_size = max_size,
         };
         init_entries(size, kd->entries);
     } else {
@@ -181,9 +187,9 @@ ccask_keydir* ccask_keydir_init(ccask_keydir* kd, size_t size) {
     return kd;
 }
 
-ccask_keydir* ccask_keydir_new(size_t size) {
+ccask_keydir* ccask_keydir_new(size_t size, size_t max_size) {
     ccask_keydir* kd = malloc(sizeof(ccask_keydir));
-    kd = ccask_keydir_init(kd, size);
+    kd = ccask_keydir_init(kd, size, max_size);
     return kd;
 }
 
@@ -205,6 +211,41 @@ void ccask_keydir_destroy(ccask_keydir* kd) {
 void ccask_keydir_delete(ccask_keydir* kd) {
     ccask_keydir_destroy(kd);
     free(kd);
+}
+
+/**@brief ccask_keydir_resize returns 0 on success; 1 when a null pointer is passed; -1 when the keydir is already at its maximum size; -2 when malloc fails; -3 when new size would overflow*/
+int ccask_keydir_resize(ccask_keydir* kd) {
+    if (!kd) return 1;
+    if (kd->size >= kd->max_size) return -1;
+
+    size_t old_size = kd->size;
+    if (kd->size * 2 < kd->size || kd->size * 2 > kd->max_size) {
+        kd->size = kd->max_size;
+    } else {
+        kd->size = kd->size * 2;
+    }
+
+    if (kd->size * sizeof(ccask_kdrow) < kd->size) return -3;
+    ccask_kdrow* new_entries = malloc(sizeof(ccask_kdrow) * kd->size);
+    if (!new_entries) return -2;
+
+    // TODO: figure out why I need this? if I need this?
+    // a lot of iteration involved here
+    init_entries(kd->size, new_entries);
+
+    for (size_t i = 0; i < old_size; i++) {
+        // if there is an entry in this bucket, the timestamp will be nonzero
+        ccask_kdrow row = kd->entries[i];
+        if (row.timestamp != 0) {
+            size_t new_bucket = hash(row.key_size, row.key, kd->size);
+            ccask_kdrow* cpy = ccask_kdrow_copy(&new_entries[new_bucket], &row);
+            if (!cpy) return -2;
+        }
+    }
+
+    free(kd->entries);
+    kd->entries = new_entries;
+    return 0;
 }
 
 /**@brief walk the chain of elements until the next pointer is null, then insert our new element there*/
@@ -234,6 +275,17 @@ ccask_kdrow* keydir_chain_insert(ccask_kdrow* entry, ccask_kdrow* elem) {
 
 ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow* elem) {
     if (!kd || !elem) return 0;
+
+    if (kd->entry_count == SIZE_MAX) return 0;
+
+    if (kd->entry_count + 1 / kd->size > kd->load_factor / 100 && kd->size < kd->max_size) {
+        int res = ccask_keydir_resize(kd);
+        if (res != 0) {
+            fprintf(stderr, "error code in ccask_keydir_resize: %d\n", res);
+            exit(1);
+        }
+    }
+
     size_t index = hash(elem->key_size, elem->key, kd->size);
     if (kd->entries[index].key_size == 0) {
         ccask_kdrow* entry = kd->entries + index;
@@ -242,6 +294,7 @@ ccask_keydir* ccask_keydir_insert(ccask_keydir* kd, ccask_kdrow* elem) {
         keydir_chain_insert(&(kd->entries[index]), elem);
     }
 
+    kd->entry_count++;
     return kd;
 }
 
