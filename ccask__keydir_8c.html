@@ -134,18 +134,22 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow_vpos</b
 <tr class="memitem:a67b4ffeef2a70cd3ee20b72873c51429"><td class="memItemLeft" align="right" valign="top"><a id="a67b4ffeef2a70cd3ee20b72873c51429"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_kdrow_print</b> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *kdr)</td></tr>
 <tr class="separator:a67b4ffeef2a70cd3ee20b72873c51429"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56d2489cc6f0f7db9b4c838ae7882976"><td class="memItemLeft" align="right" valign="top"><a id="a56d2489cc6f0f7db9b4c838ae7882976"></a>
-<a class="el" href="structccask__keydir.html">ccask_keydir</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_init</b> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd, size_t size)</td></tr>
-<tr class="separator:a56d2489cc6f0f7db9b4c838ae7882976"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a072994077a16871e6d138c4ce1b29e95"><td class="memItemLeft" align="right" valign="top"><a id="a072994077a16871e6d138c4ce1b29e95"></a>
-<a class="el" href="structccask__keydir.html">ccask_keydir</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_new</b> (size_t size)</td></tr>
-<tr class="separator:a072994077a16871e6d138c4ce1b29e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a534546f9ae2d330927444e4c79b8350a"><td class="memItemLeft" align="right" valign="top"><a id="a534546f9ae2d330927444e4c79b8350a"></a>
+<a class="el" href="structccask__keydir.html">ccask_keydir</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_init</b> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd, size_t size, size_t max_size)</td></tr>
+<tr class="separator:a534546f9ae2d330927444e4c79b8350a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add4cb90179d3d98cba8718f691fbadab"><td class="memItemLeft" align="right" valign="top"><a id="add4cb90179d3d98cba8718f691fbadab"></a>
+<a class="el" href="structccask__keydir.html">ccask_keydir</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_new</b> (size_t size, size_t max_size)</td></tr>
+<tr class="separator:add4cb90179d3d98cba8718f691fbadab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a059db4bf0fcebcc90dd919c9a1e3a340"><td class="memItemLeft" align="right" valign="top"><a id="a059db4bf0fcebcc90dd919c9a1e3a340"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_destroy</b> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd)</td></tr>
 <tr class="separator:a059db4bf0fcebcc90dd919c9a1e3a340"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7758b29531d8bb9b41dcca20dd8cc040"><td class="memItemLeft" align="right" valign="top"><a id="a7758b29531d8bb9b41dcca20dd8cc040"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_keydir_delete</b> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd)</td></tr>
 <tr class="separator:a7758b29531d8bb9b41dcca20dd8cc040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7c75319a8240b903426059bc69ae66e"><td class="memItemLeft" align="right" valign="top"><a id="ae7c75319a8240b903426059bc69ae66e"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__keydir_8c.html#ae7c75319a8240b903426059bc69ae66e">ccask_keydir_resize</a> (<a class="el" href="structccask__keydir.html">ccask_keydir</a> *kd)</td></tr>
+<tr class="memdesc:ae7c75319a8240b903426059bc69ae66e"><td class="mdescLeft">&#160;</td><td class="mdescRight">ccask_keydir_resize returns 0 on success; 1 when a null pointer is passed; -1 when the keydir is already at its maximum size; -2 when malloc fails; -3 when new size would overflow <br /></td></tr>
+<tr class="separator:ae7c75319a8240b903426059bc69ae66e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfc4e4837973cfae263ef61d2b06f67a"><td class="memItemLeft" align="right" valign="top"><a id="abfc4e4837973cfae263ef61d2b06f67a"></a>
 <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__keydir_8c.html#abfc4e4837973cfae263ef61d2b06f67a">keydir_chain_insert</a> (<a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *entry, <a class="el" href="structccask__kdrow.html">ccask_kdrow</a> *elem)</td></tr>
 <tr class="memdesc:abfc4e4837973cfae263ef61d2b06f67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">walk the chain of elements until the next pointer is null, then insert our new element there <br /></td></tr>

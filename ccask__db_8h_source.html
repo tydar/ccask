@@ -84,7 +84,7 @@ $(function() {
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#define CCASK_MAGIC_NUMBER 0x0CCA2CFF</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// if we are compiling tests, we want to have a small max-file-size for easier testing</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">// #define MAX_FILE_BYTES 1024</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">//#define MAX_FILE_BYTES 1024</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#define MAX_FILE_BYTES 512*(1024)*(1024) // 512 MB</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
@@ -145,7 +145,7 @@ $(function() {
 <div class="ttc" id="accask__db_8c_html_adc55300814f07140a280924297114e16"><div class="ttname"><a href="ccask__db_8c.html#adc55300814f07140a280924297114e16">ccask_query_interp</a></div><div class="ttdeci">ccask_result * ccask_query_interp(ccask_db *db, uint8_t *cmd)</div><div class="ttdoc">given a byte array representing a query return a ccask_result representing the request or 0 if the re...</div><div class="ttdef"><b>Definition:</b> ccask_db.c:792</div></div>
 <div class="ttc" id="astructccask__get__result_html"><div class="ttname"><a href="structccask__get__result.html">ccask_get_result</a></div><div class="ttdef"><b>Definition:</b> ccask_db.c:45</div></div>
 <div class="ttc" id="astructccask__db_html"><div class="ttname"><a href="structccask__db.html">ccask_db</a></div><div class="ttdef"><b>Definition:</b> ccask_db.c:30</div></div>
-<div class="ttc" id="astructccask__config_html"><div class="ttname"><a href="structccask__config.html">ccask_config</a></div><div class="ttdef"><b>Definition:</b> ccask_config.c:25</div></div>
+<div class="ttc" id="astructccask__config_html"><div class="ttname"><a href="structccask__config.html">ccask_config</a></div><div class="ttdef"><b>Definition:</b> ccask_config.c:26</div></div>
 <div class="ttc" id="accask__db_8c_html_af5358bea2206fc7bdc1eeedde1cb0a01"><div class="ttname"><a href="ccask__db_8c.html#af5358bea2206fc7bdc1eeedde1cb0a01">ccask_gr_vsz</a></div><div class="ttdeci">uint32_t ccask_gr_vsz(const ccask_get_result *gr)</div><div class="ttdoc">getter for ccask_get_result value size</div><div class="ttdef"><b>Definition:</b> ccask_db.c:82</div></div>
 <div class="ttc" id="astructccask__result_html"><div class="ttname"><a href="structccask__result.html">ccask_result</a></div><div class="ttdef"><b>Definition:</b> ccask_db.c:51</div></div>
 <div class="ttc" id="accask__db_8c_html_a660dd0118cfab98800e335ddffad5afa"><div class="ttname"><a href="ccask__db_8c.html#a660dd0118cfab98800e335ddffad5afa">ccask_gr_val</a></div><div class="ttdeci">uint8_t * ccask_gr_val(uint8_t *dest, const ccask_get_result *src)</div><div class="ttdoc">given a non-null ccask_get_result* and a uint8_t* dest allocated to the appropriate size,...</div><div class="ttdef"><b>Definition:</b> ccask_db.c:87</div></div>
