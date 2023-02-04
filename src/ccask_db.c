@@ -339,6 +339,7 @@ int dir_lock(ccask_db* db) {
     FILE* fp;
 
     pid_t p = getpid();
+    mode_t m = S_IRUSR | S_IWUSR;
     errno = 0;
 
     fnlen = strlen(db->path) + strlen(LOCKFILE_NAME) + 2;
@@ -348,7 +349,7 @@ int dir_lock(ccask_db* db) {
 
     if (res < 0) return DIR_ERROR;
 
-    fd = open(fn, O_WRONLY | O_CREAT | O_EXCL);
+    fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, m);
     if(fd == EEXIST) {
         return DIR_LOCKED;
     } else if (fd < 0) {
