@@ -254,7 +254,11 @@ ccask_db* ccask_db_populate(ccask_db* db) {
     struct dirent* pDirent;
 
     for (pDirent = readdir(db->dir); pDirent; pDirent = readdir(db->dir)) {
-        if (strcmp(".", pDirent->d_name) == 0 || strcmp("..", pDirent->d_name) == 0) continue;
+        if (strcmp(".", pDirent->d_name) == 0
+                || strcmp("..", pDirent->d_name) == 0
+                || strcmp(LOCKFILE_NAME, pDirent->d_name) == 0)
+
+            continue;
 
         // we will treat every file in the directory as if it were a ccask file
         // TODO: introduce magic number or other file ID method
@@ -300,20 +304,20 @@ ccask_db* ccask_db_populate(ccask_db* db) {
 
 /**@brief this function is registered with on_exit to ensure the lockfile is cleared in normal termination circumstances*/
 void delete_lockfile(int status, void* lfpath) {
-	if (lfpath == NULL) {
-		fprintf(stderr, "ccask: failed to delete lockfile\n");
-	}
+    if (lfpath == NULL) {
+        fprintf(stderr, "ccask: failed to delete lockfile\n");
+    }
 
-	char* lfpath_s = (char*)lfpath;
-	int res;
+    char* lfpath_s = (char*)lfpath;
+    int res;
 
-	errno = 0;
+    errno = 0;
 
-	res = remove(lfpath_s);
-	if (res == -1) {
-		fprintf(stderr, "ccask: failed to delete lockfile\n");
-		perror("remove");
-	}
+    res = remove(lfpath_s);
+    if (res == -1) {
+        fprintf(stderr, "ccask: failed to delete lockfile\n");
+        perror("remove");
+    }
 }
 
 #define DIR_LOCKED 0
@@ -327,43 +331,43 @@ void delete_lockfile(int status, void* lfpath) {
  * 		 If the lockfile does not exist, create it and return DIR_LOCK_CREATED
  **/
 int dir_lock(ccask_db* db) {
-	if (db == NULL) return DIR_ERROR;
+    if (db == NULL) return DIR_ERROR;
 
-	char* fn;
-	int res, fd;
-	size_t fnlen;
-	FILE* fp;
+    char* fn;
+    int res, fd;
+    size_t fnlen;
+    FILE* fp;
 
-	pid_t p = getpid();
+    pid_t p = getpid();
     errno = 0;
-	
-	fnlen = strlen(db->path) + strlen(LOCKFILE_NAME) + 2;
 
-	fn = malloc(fnlen + 2);
-	res = snprintf(fn, fnlen, "%s/%s", db->path, LOCKFILE_NAME);
+    fnlen = strlen(db->path) + strlen(LOCKFILE_NAME) + 2;
 
-	if (res < 0) return DIR_ERROR;
+    fn = malloc(fnlen + 2);
+    res = snprintf(fn, fnlen, "%s/%s", db->path, LOCKFILE_NAME);
 
-	fd = open(fn, O_WRONLY | O_CREAT | O_EXCL);
-	if(fd == EEXIST) {
-		return DIR_LOCKED;
-	} else if (fd < 0) {
-		return DIR_ERROR;
-	}
+    if (res < 0) return DIR_ERROR;
 
-	fp = fdopen(fd, "w");
+    fd = open(fn, O_WRONLY | O_CREAT | O_EXCL);
+    if(fd == EEXIST) {
+        return DIR_LOCKED;
+    } else if (fd < 0) {
+        return DIR_ERROR;
+    }
 
-	fprintf(fp, "%d", p);
-	fflush(fp);
-	fclose(fp);
+    fp = fdopen(fd, "w");
 
-	if(on_exit(delete_lockfile, fn) != 0) {
-		delete_lockfile(0, (void*)fn);
-		exit(1);
-	}
+    fprintf(fp, "%d", p);
+    fflush(fp);
+    fclose(fp);
 
-	free(fn);
-	return DIR_LOCK_CREATED;
+    if(on_exit(delete_lockfile, fn) != 0) {
+        delete_lockfile(0, (void*)fn);
+        exit(1);
+    }
+
+    free(fn);
+    return DIR_LOCK_CREATED;
 }
 
 ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
@@ -405,7 +409,7 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
 
         db->dir = dir;
 
-		dir_lock(db);
+        dir_lock(db);
 
         if (!ccask_db_populate(db)) *db = (ccask_db) {
             0
