@@ -410,14 +410,19 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
 
         db->dir = dir;
 
-        dir_lock(db);
+        int res = dir_lock(db);
+
+		if (res == DIR_LOCKED || res == DIR_ERROR) {
+			fprintf(stderr, "ccask error: failure to obtain ccask lock. is a ccask instance running on this dir?\n");
+			exit(1);
+		}
 
         if (!ccask_db_populate(db)) *db = (ccask_db) {
             0
         };
 
         char* new_filename = malloc(strlen(path) + 1 + strlen(path) + MAX_FILE_CHARS);
-        int res = snprintf(new_filename, strlen(path) + strlen(path) + 1 + MAX_FILE_CHARS, "%s/%s_%zu", path, path, db->file_id);
+        res = snprintf(new_filename, strlen(path) + strlen(path) + 1 + MAX_FILE_CHARS, "%s/%s_%zu", path, path, db->file_id);
         if (res < 0) {
             fprintf(stderr, "error constructing new filename\n");
             exit(1);
