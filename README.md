@@ -1,6 +1,6 @@
 # CCask
 
-A C KV store inspired by Bitcask.
+A log-structured KV store written in C inspired by Bitcask.
 
 # Project-wide TODO
 
