@@ -1,3 +1,5 @@
+#define _DEFAULT_SOURCE
+
 #include "ccask_db.h"
 #include "ccask_keydir.h"
 #include "ccask_header.h"
@@ -7,13 +9,16 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <dirent.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 /**@file
  * @brief ccask_db.c implements useful DB operations (get, set, populate from file)
@@ -22,6 +27,8 @@
 // TODO: change commands to an enum
 #define GET_CMD 0
 #define SET_CMD 1
+
+#define LOCKFILE_NAME "ccask.lock"
 
 // Response formats
 
@@ -247,7 +254,11 @@ ccask_db* ccask_db_populate(ccask_db* db) {
     struct dirent* pDirent;
 
     for (pDirent = readdir(db->dir); pDirent; pDirent = readdir(db->dir)) {
-        if (strcmp(".", pDirent->d_name) == 0 || strcmp("..", pDirent->d_name) == 0) continue;
+        if (strcmp(".", pDirent->d_name) == 0
+                || strcmp("..", pDirent->d_name) == 0
+                || strcmp(LOCKFILE_NAME, pDirent->d_name) == 0)
+
+            continue;
 
         // we will treat every file in the directory as if it were a ccask file
         // TODO: introduce magic number or other file ID method
@@ -290,6 +301,78 @@ ccask_db* ccask_db_populate(ccask_db* db) {
     return db;
 }
 
+
+/**@brief this function is registered with on_exit to ensure the lockfile is cleared in normal termination circumstances*/
+void delete_lockfile(int status, void* lfpath) {
+    if (lfpath == NULL) {
+        fprintf(stderr, "ccask: failed to delete lockfile\n");
+    }
+
+    char* lfpath_s = (char*)lfpath;
+    int res;
+
+    errno = 0;
+
+    res = remove(lfpath_s);
+    if (res == -1) {
+        fprintf(stderr, "ccask: failed to delete lockfile\n");
+        perror("remove");
+    }
+
+    free(lfpath);
+}
+
+#define DIR_LOCKED 0
+#define DIR_LOCK_CREATED 1
+#define DIR_ERROR 2
+/*@brief this function is an internal API used by ccask_db_init to determine whether
+ * 		 the ccask directory is already locked.
+ *
+ * 		 If the lockfile exists in the directory, return DIR_LOCKED
+ *
+ * 		 If the lockfile does not exist, create it and return DIR_LOCK_CREATED
+ **/
+int dir_lock(ccask_db* db) {
+    if (db == NULL) return DIR_ERROR;
+
+    char* fn;
+    int res, fd;
+    size_t fnlen;
+    FILE* fp;
+
+    pid_t p = getpid();
+    mode_t m = S_IRUSR | S_IWUSR;
+    errno = 0;
+
+    fnlen = strlen(db->path) + strlen(LOCKFILE_NAME) + 2;
+
+    fn = malloc(fnlen + 2);
+    res = snprintf(fn, fnlen, "%s/%s", db->path, LOCKFILE_NAME);
+
+    if (res < 0) return DIR_ERROR;
+
+    fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, m);
+    if(fd == EEXIST) {
+        return DIR_LOCKED;
+    } else if (fd < 0) {
+        return DIR_ERROR;
+    }
+
+    fp = fdopen(fd, "w");
+
+    fprintf(fp, "%d", p);
+    fflush(fp);
+    fclose(fp);
+
+    if(on_exit(delete_lockfile, fn) != 0) {
+        delete_lockfile(0, (void*)fn);
+        exit(1);
+    }
+
+    // we can't free the memory allocated for fn, since delete_lockfile will need it later
+    return DIR_LOCK_CREATED;
+}
+
 ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
     if (db && path) {
         *db = (ccask_db) {
@@ -328,12 +411,20 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
         }
 
         db->dir = dir;
+
+        int res = dir_lock(db);
+
+        if (res == DIR_LOCKED || res == DIR_ERROR) {
+            fprintf(stderr, "ccask error: failure to obtain ccask lock. is a ccask instance running on this dir?\n");
+            return NULL;
+        }
+
         if (!ccask_db_populate(db)) *db = (ccask_db) {
             0
         };
 
         char* new_filename = malloc(strlen(path) + 1 + strlen(path) + MAX_FILE_CHARS);
-        int res = snprintf(new_filename, strlen(path) + strlen(path) + 1 + MAX_FILE_CHARS, "%s/%s_%zu", path, path, db->file_id);
+        res = snprintf(new_filename, strlen(path) + strlen(path) + 1 + MAX_FILE_CHARS, "%s/%s_%zu", path, path, db->file_id);
         if (res < 0) {
             fprintf(stderr, "error constructing new filename\n");
             exit(1);
@@ -363,8 +454,9 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
 
 ccask_db* ccask_db_new(const char* path, ccask_config* cfg) {
     ccask_db* db = malloc(sizeof(ccask_db));
-    db = ccask_db_init(db, path, cfg);
-    return db;
+    ccask_db* db_res = ccask_db_init(db, path, cfg);
+    if(db_res == NULL) ccask_db_destroy(db);
+    return db_res;
 }
 
 void ccask_db_destroy(ccask_db* db) {
@@ -372,7 +464,7 @@ void ccask_db_destroy(ccask_db* db) {
         free(db->path);
         //free(db->keydir);
         ccask_keydir_delete(db->keydir);
-        fclose(db->file);
+        if(db->file) fclose(db->file);
         *db = (ccask_db) {
             0
         };

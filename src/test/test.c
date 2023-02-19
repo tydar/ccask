@@ -16,6 +16,8 @@
 #include "ccask_config.h"
 #include "util.h"
 
+#define TEST_DIR "CCASK_TEST"
+
 void test_kdrow(void) {
     puts("\t===== starting ccask_kdrow tests =====");
     uint32_t ksz = 5;
@@ -120,9 +122,13 @@ void test_db(void) {
     puts("\t===== ccask_db tests ======");
     ccask_config* cfg = ccask_config_from_env();
 
-    ccask_db* db = ccask_db_new("TEST_DB_DIR", cfg);
+    ccask_db* db = ccask_db_new(TEST_DIR, cfg);
     puts("Assert DB ptr not null after _new...");
     assert(db != 0);
+
+    ccask_db* db_null = ccask_db_new(TEST_DIR, cfg);
+    puts("Lock file causes second db initialization to return null...");
+    assert(db_null == NULL);
 
     uint32_t ksz = 5;
     uint8_t key[5] = { 1, 2, 3, 4, 5 };

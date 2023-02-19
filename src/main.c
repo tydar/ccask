@@ -18,6 +18,11 @@ int main(void) {
     crc_init();
     ccask_db* db = ccask_db_new("./ccask_file", cfg);
 
+    if (db == NULL) {
+        fprintf(stderr, "error initializing ccask\n");
+        exit(1);
+    }
+
     /*
     uint8_t key[5] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
     uint8_t value[10] = { 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41 };
