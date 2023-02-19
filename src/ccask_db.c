@@ -318,6 +318,8 @@ void delete_lockfile(int status, void* lfpath) {
         fprintf(stderr, "ccask: failed to delete lockfile\n");
         perror("remove");
     }
+
+    free(lfpath);
 }
 
 #define DIR_LOCKED 0
@@ -367,7 +369,7 @@ int dir_lock(ccask_db* db) {
         exit(1);
     }
 
-    free(fn);
+    // we can't free the memory allocated for fn, since delete_lockfile will need it later
     return DIR_LOCK_CREATED;
 }
 
@@ -412,10 +414,10 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
 
         int res = dir_lock(db);
 
-		if (res == DIR_LOCKED || res == DIR_ERROR) {
-			fprintf(stderr, "ccask error: failure to obtain ccask lock. is a ccask instance running on this dir?\n");
-			exit(1);
-		}
+        if (res == DIR_LOCKED || res == DIR_ERROR) {
+            fprintf(stderr, "ccask error: failure to obtain ccask lock. is a ccask instance running on this dir?\n");
+            return NULL;
+        }
 
         if (!ccask_db_populate(db)) *db = (ccask_db) {
             0
@@ -452,8 +454,9 @@ ccask_db* ccask_db_init(ccask_db* db, const char* path, ccask_config* cfg) {
 
 ccask_db* ccask_db_new(const char* path, ccask_config* cfg) {
     ccask_db* db = malloc(sizeof(ccask_db));
-    db = ccask_db_init(db, path, cfg);
-    return db;
+    ccask_db* db_res = ccask_db_init(db, path, cfg);
+    if(db_res == NULL) ccask_db_destroy(db);
+    return db_res;
 }
 
 void ccask_db_destroy(ccask_db* db) {
@@ -461,7 +464,7 @@ void ccask_db_destroy(ccask_db* db) {
         free(db->path);
         //free(db->keydir);
         ccask_keydir_delete(db->keydir);
-        fclose(db->file);
+        if(db->file) fclose(db->file);
         *db = (ccask_db) {
             0
         };
