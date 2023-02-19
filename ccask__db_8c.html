@@ -173,8 +173,8 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_gr_bytes</b
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#a993de85ebb2ef290accecd949f0d2553">delete_lockfile</a> (int status, void *lfpath)</td></tr>
 <tr class="memdesc:a993de85ebb2ef290accecd949f0d2553"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function is registered with on_exit to ensure the lockfile is cleared in normal termination circumstances <br /></td></tr>
 <tr class="separator:a993de85ebb2ef290accecd949f0d2553"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a162206876f27e49dd234f71a7a98c1f5"><td class="memItemLeft" align="right" valign="top"><a id="a162206876f27e49dd234f71a7a98c1f5"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>dir_lock</b> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
+<tr class="memitem:a162206876f27e49dd234f71a7a98c1f5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ccask__db_8c.html#a162206876f27e49dd234f71a7a98c1f5">dir_lock</a> (<a class="el" href="structccask__db.html">ccask_db</a> *db)</td></tr>
+<tr class="memdesc:a162206876f27e49dd234f71a7a98c1f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function is an internal API used by ccask_db_init to determine whether the ccask directory is already locked.  <a href="ccask__db_8c.html#a162206876f27e49dd234f71a7a98c1f5">More...</a><br /></td></tr>
 <tr class="separator:a162206876f27e49dd234f71a7a98c1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da07b3bb6fa92782d18d9a95447d3c1"><td class="memItemLeft" align="right" valign="top"><a id="a7da07b3bb6fa92782d18d9a95447d3c1"></a>
 <a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_db_init</b> (<a class="el" href="structccask__db.html">ccask_db</a> *db, const char *path, <a class="el" href="structccask__config.html">ccask_config</a> *cfg)</td></tr>
@@ -334,6 +334,28 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ccask_res_bytes</
 
 <p>set implementation 1) calc crc 2) at file_pos write crc timestamp keysize valuesize key value 3) create and insert a keydir entry </p>
 <p>Keydir value_pos should be file_pos prior to write </p>
+
+</div>
+</div>
+<a id="a162206876f27e49dd234f71a7a98c1f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a162206876f27e49dd234f71a7a98c1f5">&#9670;&nbsp;</a></span>dir_lock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int dir_lock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structccask__db.html">ccask_db</a> *&#160;</td>
+          <td class="paramname"><em>db</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>this function is an internal API used by ccask_db_init to determine whether the ccask directory is already locked. </p>
+<p>If the lockfile exists in the directory, return DIR_LOCKED</p>
+<p>If the lockfile does not exist, create it and return DIR_LOCK_CREATED </p>
 
 </div>
 </div>
