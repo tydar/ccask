@@ -18,7 +18,7 @@ var searchData=
   ['ccask_5fheader_5ftimestamp_15',['ccask_header_timestamp',['../ccask__header_8c.html#a15cb005872d099cd43d5abe195534e84',1,'ccask_header.c']]],
   ['ccask_5fheader_5fvsz_16',['ccask_header_vsz',['../ccask__header_8c.html#a9ea8abe6e17d934a53fdcf2282e49769',1,'ccask_header.c']]],
   ['ccask_5fkdrow_17',['ccask_kdrow',['../structccask__kdrow.html',1,'']]],
-  ['ccask_5fkdrow_5fdestroy_18',['ccask_kdrow_destroy',['../ccask__keydir_8c.html#a6d5be3e276646fcd879dacf2272c3342',1,'ccask_kdrow_destroy(ccask_kdrow *kdr):&#160;ccask_keydir.c'],['../ccask__keydir_8h.html#a6d5be3e276646fcd879dacf2272c3342',1,'ccask_kdrow_destroy(ccask_kdrow *kdr):&#160;ccask_keydir.c']]],
+  ['ccask_5fkdrow_5fdestroy_18',['ccask_kdrow_destroy',['../ccask__keydir_8h.html#a6d5be3e276646fcd879dacf2272c3342',1,'ccask_kdrow_destroy(ccask_kdrow *kdr):&#160;ccask_keydir.c'],['../ccask__keydir_8c.html#a6d5be3e276646fcd879dacf2272c3342',1,'ccask_kdrow_destroy(ccask_kdrow *kdr):&#160;ccask_keydir.c']]],
   ['ccask_5fkeydir_19',['ccask_keydir',['../structccask__keydir.html',1,'']]],
   ['ccask_5fkeydir_2ec_20',['ccask_keydir.c',['../ccask__keydir_8c.html',1,'']]],
   ['ccask_5fkeydir_2eh_21',['ccask_keydir.h',['../ccask__keydir_8h.html',1,'']]],

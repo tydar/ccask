@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['split_5ftimet_5fbytewise_88',['split_timet_bytewise',['../ccask__db_8c.html#acd098880dc08a37c79e0b086607947bc',1,'ccask_db.c']]],
-  ['split_5fuint32t_5fbytewise_89',['split_uint32t_bytewise',['../ccask__db_8c.html#a26cde2e9a8f94bbeb6f7054efeed00ff',1,'ccask_db.c']]]
+  ['keydir_5fchain_5finsert_89',['keydir_chain_insert',['../ccask__keydir_8c.html#abfc4e4837973cfae263ef61d2b06f67a',1,'ccask_keydir.c']]]
 ];

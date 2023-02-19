@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keydir_5fchain_5finsert_87',['keydir_chain_insert',['../ccask__keydir_8c.html#abfc4e4837973cfae263ef61d2b06f67a',1,'ccask_keydir.c']]]
+  ['hash_88',['hash',['../ccask__keydir_8c.html#a5dabc32c24ea4490d3946ef14dca3e74',1,'ccask_keydir.c']]]
 ];

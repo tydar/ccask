@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hash_41',['hash',['../ccask__keydir_8c.html#a5dabc32c24ea4490d3946ef14dca3e74',1,'ccask_keydir.c']]]
+  ['delete_5flockfile_41',['delete_lockfile',['../ccask__db_8c.html#a993de85ebb2ef290accecd949f0d2553',1,'ccask_db.c']]]
 ];
