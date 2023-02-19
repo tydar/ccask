@@ -325,7 +325,7 @@ void delete_lockfile(int status, void* lfpath) {
 #define DIR_LOCKED 0
 #define DIR_LOCK_CREATED 1
 #define DIR_ERROR 2
-/*@brief this function is an internal API used by ccask_db_init to determine whether
+/**@brief this function is an internal API used by ccask_db_init to determine whether
  * 		 the ccask directory is already locked.
  *
  * 		 If the lockfile exists in the directory, return DIR_LOCKED
