@@ -13,7 +13,7 @@ After building,
 
 `$ ./build/ccask`
 
-A URL shortener intended to run with a local CCask as its backend storage can be found at [github.com/tydar/smallurl-ccask](github.com/tydar/smallurl-ccask).
+A URL shortener intended to run with a local CCask as its backend storage can be found at [github.com/tydar/smallurl-ccask](https://github.com/tydar/smallurl-ccask).
 
 ## Tests
 
